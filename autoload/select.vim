@@ -277,7 +277,7 @@ func! s:add_prompt_mappings() abort
     inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
     inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
     inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
-    inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev<CR>
+    inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
     inoremap <silent><buffer> <BS> <ESC>:call <SID>on_backspace()<CR>
     inoremap <silent><buffer> <C-n> <ESC>:call <SID>on_next()<CR>
     inoremap <silent><buffer> <C-p> <ESC>:call <SID>on_prev()<CR>
