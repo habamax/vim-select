@@ -81,6 +81,7 @@ func! s:prepare_buffer(type)
     elseif a:type == 'result'
         exe printf("silent file [select %s]", s:state.type)
         set filetype=selectresults
+        setlocal statusline=%#Statusline#%f
         setlocal buftype=nofile
         setlocal cursorline
         setlocal noruler
