@@ -200,7 +200,11 @@ endfunc
 
 func! s:on_next(...) abort
     let n = a:0 == 1 ? a:1 : 1
-    call win_execute(s:state.result_buf.winid, printf('normal! %sj', n), 1)
+    if n == 1 && s:is_cursor_on_last_line()
+        call win_execute(s:state.result_buf.winid, 'normal! gg', 1)
+    else
+        call win_execute(s:state.result_buf.winid, printf('normal! %sj', n), 1)
+    endif
     startinsert!
 endfunc
 
@@ -227,7 +231,11 @@ endfunc
 
 func! s:on_prev(...) abort
     let n = a:0 == 1 ? a:1 : 1
-    call win_execute(s:state.result_buf.winid, printf('normal! %sk', n), 1)
+    if n == 1 && s:is_cursor_on_first_line()
+        call win_execute(s:state.result_buf.winid, 'normal! G', 1)
+    else
+        call win_execute(s:state.result_buf.winid, printf('normal! %sk', n), 1)
+    endif
     startinsert!
 endfunc
 
@@ -247,6 +255,16 @@ func! s:is_single_result() abort
     let last_linenr = line('$', s:state.result_buf.winid)
     let last_line = getbufline(s:state.result_buf.bufnr, '$')[0]
     return last_linenr == 1 && last_line !~ '^\s*$'
+endfunc
+
+
+func! s:is_cursor_on_last_line() abort
+    return line('$', s:state.result_buf.winid) == line('.', s:state.result_buf.winid)
+endfunc
+
+
+func! s:is_cursor_on_first_line() abort
+    return 1 == line('.', s:state.result_buf.winid)
 endfunc
 
 
