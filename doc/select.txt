@@ -6,14 +6,14 @@ License: MIT
 
 INTRODUCTION                                                          *select*
 
-Plugin works with recent (nightly) vim having `matchfuzzypos()` function and
-`prompt-buffer` feature implemented.
+Plugin works with recent (nightly) vim having |matchfuzzypos| function and
+|prompt-buffer| feature implemented.
 
 For buffers, MRU and commands it lets you narrow down the list with fuzzy
-matching and select with `<CR>` or `<Tab>` if only 1 candidate is in the list.
+matching and select with <CR> or <Tab> if only 1 candidate is in the list.
 
-For files it will let you go to parent directory with `<BS>` and to selected
-directory with `<TAB>`.
+For files it will let you go to parent directory with <BS> and to selected
+directory with <TAB>.
 
 NOTE: No "project-wide" file selection like fzf or ctrlp have. Yet.
 
@@ -49,9 +49,9 @@ DEFAULT SELECT WINDOW MAPPINGS                       *select-default-mappings*
 
                                                                 *select-<TAB>*
 <TAB> select next item in the list, for a single item it will open/execute
-it. Additionally for *:SelectFile* it will open current directory.
+it. Additionally for |SelectFile| it will open current directory.
 
-<BS> open parent directory. Only for *:SelectFile*.              *select-<BS>*
+<BS> open parent directory. Only for |SelectFile|.              *select-<BS>*
 <C-n> or <Down> select next item.                               *select-<C-n>*
 <C-p> or <Up> select previous item.                             *select-<C-p>*
 <PageUp> scroll up select window.                            *select-<PageUp>*
