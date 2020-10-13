@@ -48,6 +48,7 @@ func! select#do(type, ...) abort
         let s:state.init_buf = {"bufnr": bufnr(), "winid": winnr()->win_getid()}
         let s:state.result_buf = s:create_result_buf()
         let s:state.prompt_buf = s:create_prompt_buf()
+        let s:state.cached_items = []
         startinsert!
     catch /.*/
         echom v:exception
@@ -152,7 +153,13 @@ func! s:on_update() abort
 
     let input = s:get_prompt_value()
 
-    let items = s:runner[s:state.type]()
+    if empty(s:state.cached_items)
+        let s:state.cached_items = s:runner[s:state.type]()
+    else
+        echom "using cache4"
+    endif
+    let items = s:state.cached_items
+
     let highlights = []
 
     if input !~ '^\s*$'
@@ -181,6 +188,7 @@ func! s:on_next_maybe() abort
     if s:state.type == 'file' && current_res =~ '/$'
         let s:state.path = simplify(s:state.path..current_res)
         call setbufline(s:state.prompt_buf.bufnr, '$', '')
+        let s:state.cached_items = []
         call s:on_update()
         startinsert!
     elseif s:is_single_result()
@@ -208,6 +216,7 @@ func! s:on_backspace() abort
         let parent_path = fnamemodify(s:state.path, ":p:h:h")
         if parent_path != s:state.path
             let s:state.path = substitute(parent_path..'/', '[/\\]\+', '/', 'g')
+            let s:state.cached_items = []
             call s:on_update()
         endif
     else
