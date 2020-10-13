@@ -155,8 +155,6 @@ func! s:on_update() abort
 
     if empty(s:state.cached_items)
         let s:state.cached_items = s:runner[s:state.type]()
-    else
-        echom "using cache4"
     endif
     let items = s:state.cached_items
 
