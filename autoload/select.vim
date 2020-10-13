@@ -132,12 +132,12 @@ endfunc
 func! s:on_select() abort
     let current_res = s:get_current_result()
 
-    call s:close()
-
     if empty(current_res)
+        startinsert!
         return
     endif
 
+    call s:close()
 
     if s:state.type == 'file'
         let current_res = fnameescape(simplify(s:state.path..'/'..current_res))
