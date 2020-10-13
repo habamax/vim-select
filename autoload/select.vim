@@ -137,11 +137,19 @@ func! s:on_select() abort
         return
     endif
 
-    call s:close()
-
     if s:state.type == 'file'
-        let current_res = fnameescape(simplify(s:state.path..'/'..current_res))
+        let current_res = fnameescape(simplify(s:state.path..current_res))
+        if current_res =~ '/$'
+            let s:state.path = current_res
+            call setbufline(s:state.prompt_buf.bufnr, '$', '')
+            let s:state.cached_items = []
+            call s:on_update()
+            startinsert!
+            return
+        endif
     endif
+
+    call s:close()
 
     exe printf(s:sink[s:state.type], current_res)
 endfunc
@@ -182,14 +190,7 @@ endfunc
 
 
 func! s:on_next_maybe() abort
-    let current_res = s:get_current_result()
-    if s:state.type == 'file' && current_res =~ '/$'
-        let s:state.path = simplify(s:state.path..current_res)
-        call setbufline(s:state.prompt_buf.bufnr, '$', '')
-        let s:state.cached_items = []
-        call s:on_update()
-        startinsert!
-    elseif s:is_single_result()
+    if s:is_single_result()
         call s:on_select()
     else
         call s:on_next()
