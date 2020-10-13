@@ -63,14 +63,22 @@ too.
 
 COMMANDS                                                     *select-commands*
 
-*:SelectFile* to navigate filesystem and select/open files and directories.
+:Select                                                              *:Select*
+Without arguments opens select window for current file directory.
+
+:SelectFile                                                      *:SelectFile*
+to navigate filesystem and select/open files and directories.
 By default opens directory of a current file. Accepts directory as an
 argument.
 
-*:SelectBuffer* to select and open a buffer.
+:Select buffer                                                *:Select_buffer*
+Opens select window for buffers.
 
-*:SelectMRU* to select and open a file from history (most recently used).
+:Select mru                                                      *:Select_mru*
+Opens select window for |v:oldfiles| AKA Most Recently Used.
 
-*:SelectCmd* to select and execute an :ex command without parameters.
+:Select command                                              *:Select_command*
+Opens select window for :ex commands.
 
-*:SelectColors* to select and apply a colorscheme.
+:Select colors                                                *:Select_colors*
+Opens select window for colorschemes.

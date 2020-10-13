@@ -69,10 +69,11 @@ NOTE: no mappings to open in splits or tabs as of yet. Also no way to remap it t
 
 == Commands
 
+* `:Select` without arguments opens select window for current file directory.
 * `:SelectFile` to navigate filesystem and select/open files and directories.
   By default opens directory of a current file. Accepts directory as an
   argument.
-* `:SelectBuffer` to select and open a buffer.
-* `:SelectMRU` to select and open a file from history (most recently used).
-* `:SelectCmd` to select and execute an `:ex` command without parameters.
-* `:SelectColors` to select and apply a colorscheme.
+* `:Select buffer` to select and open a buffer.
+* `:Select mru` to select and open a file from history (most recently used).
+* `:Select command` to select and execute an `:ex` command without parameters.
+* `:Select colors` to select and apply a colorscheme.
