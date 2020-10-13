@@ -1,0 +1,76 @@
+*select.txt* Fuzzy select file/buffer/MRU/etc
+
+Author:  Maxim Kim <https://habamax.github.io>
+URL:     https://github.com/habamax/vim-select
+License: MIT
+
+INTRODUCTION                                                          *select*
+
+Plugin works with recent (nightly) vim having `matchfuzzypos()` function and
+`prompt-buffer` feature implemented.
+
+For buffers, MRU and commands it lets you narrow down the list with fuzzy
+matching and select with `<CR>` or `<Tab>` if only 1 candidate is in the list.
+
+For files it will let you go to parent directory with `<BS>` and to selected
+directory with `<TAB>`.
+
+NOTE: No "project-wide" file selection like fzf or ctrlp have. Yet.
+
+
+MAPPINGS                                                     *select-mappings*
+
+There are no default global mappings, add your own.
+
+Safe (will not create mappings if plugin was not loaded):
+
+>
+    " add it to ~/.vim/after/plugin/select.vim
+    if exists("g:loaded_select")
+        nmap <leader>f <Plug>(SelectFile)
+        nmap <leader>b <Plug>(SelectBuffer)
+        nmap <leader>m <Plug>(SelectMRU)
+        nmap <leader>; <Plug>(SelectCmd)
+    endif
+
+or regular:
+>
+    " add it to your vimrc
+    nmap <leader>f <Plug>(SelectFile)
+    nmap <leader>b <Plug>(SelectBuffer)
+    nmap <leader>m <Plug>(SelectMRU)
+    nmap <leader>; <Plug>(SelectCmd)
+
+
+DEFAULT SELECT WINDOW MAPPINGS                       *select-default-mappings*
+
+<CR> to open/execute current item.                               *select-<CR>*
+<ESC> to close the select window.                               *select-<ESC>*
+
+                                                                *select-<TAB>*
+<TAB> select next item in the list, for a single item it will open/execute
+it. Additionally for *:SelectFile* it will open current directory.
+
+<BS> open parent directory. Only for *:SelectFile*.              *select-<BS>*
+<C-n> or <Down> select next item.                               *select-<C-n>*
+<C-p> or <Up> select previous item.                             *select-<C-p>*
+<PageUp> scroll up select window.                            *select-<PageUp>*
+<PageDown> scroll down select window.                      *select-<PageDown>*
+
+NOTE: no mappings to open in splits or tabs as of yet. Also no way to remap it
+too.
+
+
+COMMANDS                                                     *select-commands*
+
+*:SelectFile* to navigate filesystem and select/open files and directories.
+By default opens directory of a current file. Accepts directory as an
+argument.
+
+*:SelectBuffer* to select and open a buffer.
+
+*:SelectMRU* to select and open a file from history (most recently used).
+
+*:SelectCmd* to select and execute an :ex command without parameters.
+
+*:SelectColors* to select and apply a colorscheme.

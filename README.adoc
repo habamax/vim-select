@@ -1,0 +1,78 @@
+= [WIP] vim-select: fuzzy select file/buffer/MRU/etc
+
+Plugin works with recent (nightly) vim having `matchfuzzypos()` function and
+`prompt-buffer` feature implemented.
+
+For buffers, MRU and commands it lets you narrow down the list with fuzzy
+matching and select with `<CR>` or `<Tab>` if only 1 candidate is in the list.
+
+For files it will let you go to parent directory with `<BS>` and to selected
+directory with `<TAB>`.
+
+
+NOTE: No "project-wide" file selection like fzf or ctrlp have. Yet.
+
+image::https://user-images.githubusercontent.com/234774/95853492-30b22400-0d5e-11eb-9a18-934752f5c22f.gif[]
+
+== Installation
+
+If you use package/plugin manager, consult their documentation.
+
+For manual installation clone this repository to your
+`~/.vim/pack/plugins/start/` path, where `plugins` subdirectory is arbitrary.
+
+NOTE: for windows users replace `~/.vim` to `~/vimfiles`.
+
+
+== Mappings
+
+There are no default global mappings, add your own
+
+.Safe (will not create mappings if plugin was not loaded)
+[source,vim]
+------------------------------------------------------------------------------
+" add it to ~/.vim/after/plugin/select.vim
+if exists("g:loaded_select")
+    nmap <leader>f <Plug>(SelectFile)
+    nmap <leader>b <Plug>(SelectBuffer)
+    nmap <leader>m <Plug>(SelectMRU)
+    nmap <leader>; <Plug>(SelectCmd)
+endif
+------------------------------------------------------------------------------
+
+or 
+
+.Regular
+[source,vim]
+------------------------------------------------------------------------------
+" add it to your vimrc
+nmap <leader>f <Plug>(SelectFile)
+nmap <leader>b <Plug>(SelectBuffer)
+nmap <leader>m <Plug>(SelectMRU)
+nmap <leader>; <Plug>(SelectCmd)
+------------------------------------------------------------------------------
+
+Select window has default mappings:
+
+* `<CR>` to open/execute current item.
+* `<ESC>` to close the select window.
+* `<TAB>` select next item in the list, for a single item it will open/execute
+  it. Additionally for `SelectFile` it will open current directory.
+* `<BS>` open parent directory. Only for `SelectFile`.
+* `<C-n>` or `<Down>` select next item.
+* `<C-p>` or `<Up>` select previous item.
+* `<PageUp>` scroll up select window.
+* `<PageDown>` scroll down select window.
+
+NOTE: no mappings to open in splits or tabs as of yet. Also no way to remap it too.
+
+
+== Commands
+
+* `:SelectFile` to navigate filesystem and select/open files and directories.
+  By default opens directory of a current file. Accepts directory as an
+  argument.
+* `:SelectBuffer` to select and open a buffer.
+* `:SelectMRU` to select and open a file from history (most recently used).
+* `:SelectCmd` to select and execute an `:ex` command without parameters.
+* `:SelectColors` to select and apply a colorscheme.
