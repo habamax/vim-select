@@ -57,6 +57,15 @@ func! select#do(type, ...) abort
 endfunc
 
 
+func! select#type_complete(A,L,P)
+    if empty(a:A)
+        return s:select_types
+    else
+        return s:select_types->matchfuzzy(a:A)
+    endif
+endfunc
+
+
 func! s:create_prompt_buf() abort
     call s:prepare_buffer('prompt')
     call s:add_prompt_mappings()
