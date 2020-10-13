@@ -88,6 +88,9 @@ func! s:prepare_buffer(type)
         if s:state.type == 'file'
             syn match SelectDirectory '^.*/$'
             hi def link SelectDirectory Directory
+        else
+            syn match SelectDirectoryPrefix '^.*[/\\]\ze.*$'
+            hi def link SelectDirectoryPrefix Comment
         endif
         hi def link SelectMatched Statement
         call prop_type_add('highlight', { 'highlight': 'SelectMatched', 'bufnr': bufnr() })
