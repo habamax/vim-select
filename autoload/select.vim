@@ -19,7 +19,7 @@ let s:runner.file = {->
             \ }
 
 if executable('rg')
-    let s:runner.projectfile = {"cmd": "rg --files --no-ignore-vcs --hidden"}
+    let s:runner.projectfile = {"cmd": "rg --files --no-ignore-vcs --hidden --glob !.git"}
 elseif executable('fd')
     let s:runner.projectfile = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
 elseif executable('fdfind')
