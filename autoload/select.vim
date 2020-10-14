@@ -54,7 +54,7 @@ func! select#do(type, ...) abort
         if index(['file', 'projectfile'], a:type) != -1 && a:0 == 1 && !empty(a:1)
             let s:state.path = simplify(expand(a:1)..'/')
         elseif a:type == 'projectfile'
-            let s:state.path = getcwd()
+            let s:state.path = getcwd()..'/'
         else
             let s:state.path = simplify(expand("%:p:h")..'/')
         endif
@@ -182,9 +182,9 @@ func! s:on_select(...) abort
         return
     endif
 
-    if s:state.type == 'file'
+    if s:state.type == 'file' || s:state.type == 'projectfile'
         let current_res = fnameescape(simplify(s:state.path..current_res))
-        if current_res =~ '/$'
+        if s:state.type == 'file' && current_res =~ '/$'
             let s:state.path = current_res
             call setbufline(s:state.prompt_buf.bufnr, '$', '')
             let s:state.cached_items = []
