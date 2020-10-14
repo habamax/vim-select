@@ -28,6 +28,7 @@ Safe (will not create mappings if plugin was not loaded):
     " add it to ~/.vim/after/plugin/select.vim
     if exists("g:loaded_select")
         nmap <leader>f <Plug>(SelectFile)
+        nmap <leader>p <Plug>(SelectProjectFile)
         nmap <leader>b <Plug>(SelectBuffer)
         nmap <leader>m <Plug>(SelectMRU)
         nmap <leader>; <Plug>(SelectCmd)
@@ -37,6 +38,7 @@ or regular:
 >
     " add it to your vimrc
     nmap <leader>f <Plug>(SelectFile)
+    nmap <leader>p <Plug>(SelectProjectFile)
     nmap <leader>b <Plug>(SelectBuffer)
     nmap <leader>m <Plug>(SelectMRU)
     nmap <leader>; <Plug>(SelectCmd)
@@ -70,21 +72,52 @@ DEFAULT SELECT WINDOW MAPPINGS                       *select-default-mappings*
 COMMANDS                                                     *select-commands*
 
 :Select                                                              *:Select*
-Without arguments opens select window for current file directory.
 
-:SelectFile                                                      *:SelectFile*
-to navigate filesystem and select/open files and directories.
-By default opens directory of a current file. Accepts directory as an
-argument.
+Select file from current file directory.
+
+
+:Select file                                                    *:Select_file*
+
+Select file from current file directory.
+
+
+:Select projectfile                                      *:Select_projectfile*
+
+Select project file from current working directory(and sub-directories).
+
+NOTE: only works if ripgrep or fd is installed.
+
+
 
 :Select buffer                                                *:Select_buffer*
-Opens select window for buffers.
+
+Select buffer from buffer list.
+
 
 :Select mru                                                      *:Select_mru*
-Opens select window for |v:oldfiles| AKA Most Recently Used.
+
+Select file from |v:oldfiles| AKA Most Recently Used.
+
 
 :Select command                                              *:Select_command*
-Opens select window for :ex commands.
+
+Select :ex command and execute it.
+
 
 :Select colors                                                *:Select_colors*
-Opens select window for colorschemes.
+
+Select colorscheme and apply it.
+
+
+:SelectFile <dir>                                                *:SelectFile*
+
+Select file from current file directory.
+Accepts directory as an argument.
+
+
+:SelectProjectFile <dir>                                  *:SelectProjectFile*
+
+Select project file from current file directory(and sub-directories).
+Accepts directory as an argument.
+
+NOTE: only works if ripgrep or fd is installed.

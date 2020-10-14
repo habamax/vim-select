@@ -10,8 +10,6 @@ For files it will let you go to parent directory with `<BS>` and to selected
 directory with `<CR>`.
 
 
-NOTE: No "project-wide" file selection like fzf or ctrlp have. Yet.
-
 image::https://user-images.githubusercontent.com/234774/95853492-30b22400-0d5e-11eb-9a18-934752f5c22f.gif[]
 
 == Installation
@@ -34,6 +32,7 @@ There are no default global mappings, add your own
 " add it to ~/.vim/after/plugin/select.vim
 if exists("g:loaded_select")
     nmap <leader>f <Plug>(SelectFile)
+    nmap <leader>p <Plug>(SelectProjectFile)
     nmap <leader>b <Plug>(SelectBuffer)
     nmap <leader>m <Plug>(SelectMRU)
     nmap <leader>; <Plug>(SelectCmd)
@@ -47,6 +46,7 @@ or
 ------------------------------------------------------------------------------
 " add it to your vimrc
 nmap <leader>f <Plug>(SelectFile)
+nmap <leader>p <Plug>(SelectProjectFile)
 nmap <leader>b <Plug>(SelectBuffer)
 nmap <leader>m <Plug>(SelectMRU)
 nmap <leader>; <Plug>(SelectCmd)
@@ -70,11 +70,18 @@ Select window has default mappings:
 
 == Commands
 
-* `:Select` without arguments opens select window for current file directory.
-* `:SelectFile` to navigate filesystem and select/open files and directories.
-  By default opens directory of a current file. Accepts directory as an
+* `:Select` file from current file directory.
+* `:Select file` from current file directory.
+* `:Select projectfile` from current working directory(and sub-directories)
+* `:Select buffer` from buffer list.
+* `:Select mru` from `v:oldfiles`.
+* `:Select command` from `:ex` and execute it without parameters.
+* `:Select colors` and apply it.
+* `:SelectFile` from current file directory. Or from directory passed as an
   argument.
-* `:Select buffer` to select and open a buffer.
-* `:Select mru` to select and open a file from history (most recently used).
-* `:Select command` to select and execute an `:ex` command without parameters.
-* `:Select colors` to select and apply a colorscheme.
+* `:SelectProjectFile` from current working directory(and sub-directories). Or
+  from directory passed as an argument.
+
+
+NOTE: `:SelectProjectFile` and `:Select projectfile` only work if `ripgrep` or
+`fd` is installed.
