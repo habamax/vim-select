@@ -65,8 +65,6 @@ DEFAULT SELECT WINDOW MAPPINGS                       *select-default-mappings*
 
 <PageDown> scroll down select window.                      *select-<PageDown>*
 
-NOTE: no mappings to open in splits or tabs as of yet. Also no way to remap it
-too.
 
 
 COMMANDS                                                     *select-commands*
