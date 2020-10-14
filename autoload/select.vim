@@ -3,11 +3,11 @@ let s:select_types = ["file", "buffer", "colors", "mru", "command"]
 let s:state = {}
 
 let s:sink = {}
-let s:sink.file = "edit %s"
-let s:sink.buffer = "buffer %s"
+let s:sink.file = {"edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
+let s:sink.buffer = {"edit": "buffer %s", "split": "sbuffer %s", "vsplit": "vert sbuffer %s"}
 let s:sink.colors = "colorscheme %s"
 let s:sink.command = ":%s"
-let s:sink.mru = "edit %s"
+let s:sink.mru = {"edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
 let s:sink = extend(s:sink, get(g:, "select_sink", {}), "force")
 
 let s:runner = {}
@@ -139,7 +139,7 @@ func! s:on_cancel() abort
 endfunc
 
 
-func! s:on_select() abort
+func! s:on_select(...) abort
     let current_res = s:get_current_result()
 
     if empty(current_res)
@@ -161,7 +161,16 @@ func! s:on_select() abort
 
     call s:close()
 
-    exe printf(s:sink[s:state.type], current_res)
+    if type(s:sink[s:state.type]) == v:t_string
+        exe printf(s:sink[s:state.type], current_res)
+    elseif type(s:sink[s:state.type]) == v:t_dict
+        if a:0 == 1
+            let cmd = s:sink[s:state.type][a:1]
+        else
+            let cmd = s:sink[s:state.type]['edit']
+        endif
+        exe printf(cmd, current_res)
+    endif
 endfunc
 
 
@@ -285,6 +294,9 @@ endfunc
 
 func! s:add_prompt_mappings() abort
     inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
+    inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('split')<CR>
+    inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('split')<CR>
+    inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('vsplit')<CR>
     inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
     inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
     inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>

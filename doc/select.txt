@@ -44,9 +44,13 @@ or regular:
 
 DEFAULT SELECT WINDOW MAPPINGS                       *select-default-mappings*
 
+<ESC> to close the select window.                               *select-<ESC>*
+
 <CR> to open/execute current item.                               *select-<CR>*
 
-<ESC> to close the select window.                               *select-<ESC>*
+<S-CR> or <C-s> to open current item in split.    *select_<C-s>* *select_<S-CR>*
+
+<C-v> to open current item in vertical split.                   *select_<C-v>*
 
                                                                 *select-<TAB>*
 <TAB> select next item in the list, for a single item it will open/execute it.
