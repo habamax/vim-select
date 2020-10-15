@@ -231,7 +231,7 @@ func! s:update_results() abort
     endif
 
     call setbufline(s:state.result_buf.bufnr, 1, items)
-    call deletebufline(s:state.result_buf.bufnr, len(items) + 1, "$")
+    silent call deletebufline(s:state.result_buf.bufnr, len(items) + 1, "$")
 
     if !empty(highlights)
         let top = min([200, len(highlights)])
