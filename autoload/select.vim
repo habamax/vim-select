@@ -28,7 +28,7 @@ else
     let s:runner.projectfile = ""
 endif
 
-let s:runner.buffer = {-> map(getbufinfo({'buflisted': 1}), {k, v -> v.bufnr .. ": " .. (empty(v.name) ? "[No Name]" : v.name)})}
+let s:runner.buffer = {-> map(getbufinfo({'buflisted': 1}), {k, v -> v.bufnr .. ": " .. (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name))})}
 let s:runner.colors = {-> getcompletion('', 'color')}
 let s:runner.command = {-> getcompletion('', 'command')}
 let s:runner.mru = {-> v:oldfiles}
@@ -121,7 +121,12 @@ endfunc
 
 
 func! s:prepare_buffer(type)
-    exe "silent noautocmd botright split select_"..a:type.."_buf"
+    if s:state->has_key(a:type.."_buf")
+        let bufnr = s:state[a:type.."_buf"].bufnr
+    else
+        let bufnr = bufnr(tempname(), 1)
+    endif
+    exe "silent noautocmd botright sbuffer "..bufnr
     resize 1
     if a:type == "prompt"
         setlocal buftype=prompt
@@ -169,8 +174,8 @@ func! s:close() abort
             call job_stop(s:state.job)
             let s:state.job = v:null
         endif
-        call win_execute(s:state.result_buf.winid, "silent quit!", 1)
-        call win_execute(s:state.prompt_buf.winid, "silent quit!", 1)
+        call win_execute(s:state.result_buf.winid, 'quit!', 1)
+        call win_execute(s:state.prompt_buf.winid, 'quit!', 1)
     catch
     finally
         call win_gotoid(s:state.init_buf.winid)
@@ -367,4 +372,21 @@ endfunc
 
 func s:normalize_path(path) abort
     return substitute(a:path, '\\\+', '/', 'g')
+endfunc
+
+
+"" Naive but looks like it works
+func! s:shorten_bufname(bname)
+    let cwd = s:normalize_path(getcwd()..'/')
+    let bname = s:normalize_path(a:bname)
+    if strchars(cwd) > strchars(bname)
+        return bname
+    endif
+    let res = ''
+    for c in range(strchars(bname))
+        if c > strchars(cwd) || bname->strcharpart(c, 1) != cwd->strcharpart(c, 1)
+            let res .= bname->strcharpart(c, 1)
+        endif
+    endfor
+    return res
 endfunc
