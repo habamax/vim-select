@@ -199,7 +199,7 @@ func! s:on_select(...) abort
     endif
 
     if s:state.type == 'file' && current_res =~ '/$'
-        let s:state.path = current_res
+        let s:state.path ..= current_res
         call setbufline(s:state.prompt_buf.bufnr, '$', '')
         let s:state.cached_items = []
         call s:update_results()
