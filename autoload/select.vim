@@ -31,7 +31,7 @@ endif
 let s:runner.buffer = {-> map(getbufinfo({'buflisted': 1}), {k, v -> v.bufnr .. ": " .. (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name))})}
 let s:runner.colors = {-> getcompletion('', 'color')}
 let s:runner.command = {-> getcompletion('', 'command')}
-let s:runner.mru = {-> v:oldfiles}
+let s:runner.mru = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
 let s:runner = extend(s:runner, get(g:, "select_runner", {}), "force")
 
 
