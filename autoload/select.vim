@@ -230,9 +230,8 @@ func! s:update_results() abort
         let [items, highlights] = matchfuzzypos(items, input)[0:s:state.maxitems]
     endif
 
-    " FIXME: when job update buffer cursorline gets back to the first line...
-    call win_execute(s:state.result_buf.winid, "silent %delete_", 1)
     call setbufline(s:state.result_buf.bufnr, 1, items)
+    call deletebufline(s:state.result_buf.bufnr, len(items) + 1, "$")
 
     if !empty(highlights)
         let top = min([200, len(highlights)])
