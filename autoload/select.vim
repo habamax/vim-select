@@ -36,7 +36,6 @@ let s:runner = extend(s:runner, get(g:, "select_runner", {}), "force")
 
 
 func! select#do(type, ...) abort
-    let s:state = {}
     if !empty(a:type)
         if index(s:select_types, a:type) == -1
             echomsg a:type.." is not supported!"
@@ -52,21 +51,20 @@ func! select#do(type, ...) abort
         let s:state.ruler = &ruler
 
         if index(['file', 'projectfile'], a:type) != -1 && a:0 == 1 && !empty(a:1)
-            let s:state.path = simplify(expand(a:1)..'/')
+            let s:state.path = s:normalize_path(fnamemodify(a:1, "%:p")..'/')
         elseif a:type == 'projectfile'
-            let s:state.path = getcwd()..'/'
+            let s:state.path = s:normalize_path(getcwd()..'/')
         else
-            let s:state.path = simplify(expand("%:p:h")..'/')
+            let s:state.path = s:normalize_path(expand("%:p:h")..'/')
         endif
 
+        let s:state.init_buf = {"bufnr": bufnr(), "winid": winnr()->win_getid()}
         let s:state.maxheight = &lines/3
         let s:state.maxitems = 1000
-        let s:state.init_buf = {"bufnr": bufnr(), "winid": winnr()->win_getid()}
         let s:state.result_buf = s:create_result_buf()
         let s:state.prompt_buf = s:create_prompt_buf()
         let s:state.cached_items = []
         let s:state.job = v:null
-        call s:update_status()
         startinsert!
     catch /.*/
         echom v:exception
@@ -98,6 +96,15 @@ func! select#type_complete(A,L,P)
 endfunc
 
 
+func! select#update_statusline() abort
+    if s:state.type == 'file' || s:state.type == 'projectfile'
+        return "["..s:state.path.."]"
+    else
+        return "["..s:state.type.."]"
+    endif
+endfunc
+
+
 func! s:create_prompt_buf() abort
     call s:prepare_buffer('prompt')
     call s:add_prompt_mappings()
@@ -114,16 +121,16 @@ endfunc
 
 
 func! s:prepare_buffer(type)
-    silent noautocmd keepalt botright 1new
+    exe "silent noautocmd botright split select_"..a:type.."_buf"
+    resize 1
     if a:type == "prompt"
         setlocal buftype=prompt
-        setlocal nocursorline
         set filetype=selectprompt
+        setlocal nocursorline
     elseif a:type == 'result'
-        exe printf("silent file [select %s]", s:state.type)
-        set filetype=selectresults
-        setlocal statusline=%#Statusline#%f
         setlocal buftype=nofile
+        set filetype=selectresults
+        setlocal statusline=%#Statusline#%{select#update_statusline()}
         setlocal cursorline
         setlocal noruler
         setlocal laststatus=0
@@ -132,21 +139,24 @@ func! s:prepare_buffer(type)
             syn match SelectDirectory '^.*/$'
             hi def link SelectDirectory Directory
         else
-            syn match SelectDirectoryPrefix '^.*[/\\]\ze.*$'
+            syn match SelectDirectoryPrefix '^\(\d\+:\)\?\zs.*[/\\]\ze.*$'
             hi def link SelectDirectoryPrefix Comment
         endif
         hi def link SelectMatched Statement
-        call prop_type_add('highlight', { 'highlight': 'SelectMatched', 'bufnr': bufnr() })
+        try
+            call prop_type_add('select_highlight', { 'highlight': 'SelectMatched', 'bufnr': bufnr() })
+        catch
+        endtry
     endif
-    setlocal bufhidden=wipe
+    setlocal nobuflisted
+    setlocal bufhidden=delete
+    setlocal noswapfile
     setlocal noundofile
     setlocal nospell
-    setlocal nobuflisted
     setlocal nocursorcolumn
     setlocal nowrap
     setlocal nonumber norelativenumber
     setlocal nolist
-    setlocal noswapfile
     setlocal tw=0
     setlocal winfixheight
     abc <buffer>
@@ -159,8 +169,8 @@ func! s:close() abort
             call job_stop(s:state.job)
             let s:state.job = v:null
         endif
-        call win_execute(s:state.result_buf.winid, "quit!", 1)
-        call win_execute(s:state.prompt_buf.winid, "quit!", 1)
+        call win_execute(s:state.result_buf.winid, "silent quit!", 1)
+        call win_execute(s:state.prompt_buf.winid, "silent quit!", 1)
     catch
     finally
         call win_gotoid(s:state.init_buf.winid)
@@ -189,7 +199,6 @@ func! s:on_select(...) abort
             let s:state.path = current_res
             call setbufline(s:state.prompt_buf.bufnr, '$', '')
             let s:state.cached_items = []
-            call s:update_status()
             call s:update_results()
             startinsert!
             return
@@ -240,7 +249,7 @@ func! s:update_results() abort
         let top = min([200, len(highlights)])
         for bufline in range(1, top)
             for pos in highlights[bufline-1]
-                call prop_add(bufline, pos + 1, {'length': 1, 'type': 'highlight', 'bufnr': s:state.result_buf.bufnr})
+                call prop_add(bufline, pos + 1, {'length': 1, 'type': 'select_highlight', 'bufnr': s:state.result_buf.bufnr})
             endfor
         endfor
     endif
@@ -281,7 +290,6 @@ func! s:on_backspace() abort
         if parent_path != s:state.path
             let s:state.path = substitute(parent_path..'/', '[/\\]\+', '/', 'g')
             let s:state.cached_items = []
-            call s:update_status()
             call s:update_results()
         endif
     else
@@ -360,8 +368,6 @@ func! s:add_prompt_autocommands() abort
 endfunc
 
 
-func! s:update_status() abort
-    if s:state.type == 'file' || s:state.type == 'projectfile'
-        call win_execute(s:state.result_buf.winid, printf('silent file [%s]', s:state.path), 1)
-    endif
+func s:normalize_path(path) abort
+    return substitute(a:path, '\\\+', '/', 'g')
 endfunc
