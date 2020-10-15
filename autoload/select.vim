@@ -5,7 +5,7 @@ let s:select_types = ["file", "buffer", "colors", "mru", "command", "projectfile
 let s:sink = {}
 let s:sink.file = {"edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
 let s:sink.projectfile = {"edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
-let s:sink.buffer = {"edit": "buffer %s", "split": "sbuffer %s", "vsplit": "vert sbuffer %s"}
+let s:sink.buffer = {"transform": {v -> matchstr(v, '^\d\+')}, "edit": "buffer %s", "split": "sbuffer %s", "vsplit": "vert sbuffer %s"}
 let s:sink.colors = "colorscheme %s"
 let s:sink.command = ":%s"
 let s:sink.mru = {"edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
@@ -28,7 +28,7 @@ else
     let s:runner.projectfile = ""
 endif
 
-let s:runner.buffer = {-> getcompletion('', 'buffer')}
+let s:runner.buffer = {-> map(getbufinfo({'buflisted': 1}), {k, v -> v.bufnr .. ": " .. (empty(v.name) ? "[No Name]" : v.name)})}
 let s:runner.colors = {-> getcompletion('', 'color')}
 let s:runner.command = {-> getcompletion('', 'command')}
 let s:runner.mru = {-> v:oldfiles}
@@ -199,15 +199,18 @@ func! s:on_select(...) abort
     call s:close()
 
     if type(s:sink[s:state.type]) == v:t_string
-        exe printf(s:sink[s:state.type], current_res)
+        let cmd = s:sink[s:state.type]
     elseif type(s:sink[s:state.type]) == v:t_dict
         if a:0 == 1
             let cmd = s:sink[s:state.type][a:1]
         else
             let cmd = s:sink[s:state.type]['edit']
         endif
-        exe printf(cmd, current_res)
+        if s:sink[s:state.type]->has_key("transform")
+            let current_res = s:sink[s:state.type]["transform"](current_res)
+        endif
     endif
+    exe printf(cmd, current_res)
 endfunc
 
 
