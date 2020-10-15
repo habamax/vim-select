@@ -3,12 +3,12 @@ let s:select_types = ["file", "buffer", "colors", "mru", "command", "projectfile
 
 
 let s:sink = {}
-let s:sink.file = {"edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
-let s:sink.projectfile = {"edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
+let s:sink.file = {"transform": {v -> fnameescape(s:state.path..v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
+let s:sink.projectfile = {"transform": {v -> fnameescape(s:state.path..v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
+let s:sink.mru = {"transform": {v -> fnameescape(v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
 let s:sink.buffer = {"transform": {v -> matchstr(v, '^\d\+')}, "edit": "buffer %s", "split": "sbuffer %s", "vsplit": "vert sbuffer %s"}
 let s:sink.colors = "colorscheme %s"
 let s:sink.command = ":%s"
-let s:sink.mru = {"edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
 let s:sink = extend(s:sink, get(g:, "select_sink", {}), "force")
 
 
@@ -193,16 +193,13 @@ func! s:on_select(...) abort
         return
     endif
 
-    if s:state.type == 'file' || s:state.type == 'projectfile'
-        let current_res = fnameescape(simplify(s:state.path..current_res))
-        if s:state.type == 'file' && current_res =~ '/$'
-            let s:state.path = current_res
-            call setbufline(s:state.prompt_buf.bufnr, '$', '')
-            let s:state.cached_items = []
-            call s:update_results()
-            startinsert!
-            return
-        endif
+    if s:state.type == 'file' && current_res =~ '/$'
+        let s:state.path = current_res
+        call setbufline(s:state.prompt_buf.bufnr, '$', '')
+        let s:state.cached_items = []
+        call s:update_results()
+        startinsert!
+        return
     endif
 
     call s:close()
