@@ -1,15 +1,13 @@
 let s:state = {}
-let s:select_types = ["file", "buffer", "colors", "mru", "command", "projectfile"]
 
 
 let s:sink = {}
-let s:sink.file = {"transform": {v -> fnameescape(s:state.path..v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
-let s:sink.projectfile = {"transform": {v -> fnameescape(s:state.path..v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
-let s:sink.mru = {"transform": {v -> fnameescape(v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
-let s:sink.buffer = {"transform": {v -> matchstr(v, '^\d\+')}, "edit": "buffer %s", "split": "sbuffer %s", "vsplit": "vert sbuffer %s"}
+let s:sink.file = {"transform": {p, v -> fnameescape(p..v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
+let s:sink.projectfile = {"transform": {p, v -> fnameescape(p..v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
+let s:sink.mru = {"transform": {_, v -> fnameescape(v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
+let s:sink.buffer = {"transform": {_, v -> matchstr(v, '^\d\+')}, "edit": "buffer %s", "split": "sbuffer %s", "vsplit": "vert sbuffer %s"}
 let s:sink.colors = "colorscheme %s"
 let s:sink.command = ":%s"
-let s:sink = extend(s:sink, get(g:, "select_sink", {}), "force")
 
 
 let s:runner = {}
@@ -32,12 +30,17 @@ let s:runner.buffer = {-> map(getbufinfo({'buflisted': 1}), {k, v -> v.bufnr .. 
 let s:runner.colors = {-> getcompletion('', 'color')}
 let s:runner.command = {-> getcompletion('', 'command')}
 let s:runner.mru = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
+
 let s:runner = extend(s:runner, get(g:, "select_runner", {}), "force")
+let s:sink = extend(s:sink, get(g:, "select_sink", {}), "force")
 
 
 func! select#do(type, ...) abort
+    let s:runner = extend(s:runner, get(b:, "select_runner", {}), "force")
+    let s:sink = extend(s:sink, get(b:, "select_sink", {}), "force")
+
     if !empty(a:type)
-        if index(s:select_types, a:type) == -1
+        if index(s:runner->keys(), a:type) == -1
             echomsg a:type.." is not supported!"
             return
         endif
@@ -52,10 +55,10 @@ func! select#do(type, ...) abort
 
         if index(['file', 'projectfile'], a:type) != -1 && a:0 == 1 && !empty(a:1)
             let s:state.path = s:normalize_path(fnamemodify(a:1, "%:p")..'/')
-        elseif a:type == 'projectfile'
-            let s:state.path = s:normalize_path(getcwd()..'/')
-        else
+        elseif a:type == 'file'
             let s:state.path = s:normalize_path(expand("%:p:h")..'/')
+        else
+            let s:state.path = s:normalize_path(getcwd()..'/')
         endif
 
         let s:state.init_buf = {"bufnr": bufnr(), "winid": winnr()->win_getid()}
@@ -89,9 +92,9 @@ endfunc
 
 func! select#type_complete(A,L,P)
     if empty(a:A)
-        return s:select_types
+        return s:runner->keys()
     else
-        return s:select_types->matchfuzzy(a:A)
+        return s:runner->keys()->matchfuzzy(a:A)
     endif
 endfunc
 
@@ -218,7 +221,7 @@ func! s:on_select(...) abort
             let cmd = s:sink[s:state.type]['edit']
         endif
         if s:sink[s:state.type]->has_key("transform")
-            let current_res = s:sink[s:state.type]["transform"](current_res)
+            let current_res = s:sink[s:state.type]["transform"](s:state.path, current_res)
         endif
     endif
     exe printf(cmd, current_res)
