@@ -60,6 +60,7 @@ func! select#do(type, ...) abort
         endif
 
         let s:state.maxheight = &lines/3
+        let s:state.maxitems = 1000
         let s:state.init_buf = {"bufnr": bufnr(), "winid": winnr()->win_getid()}
         let s:state.result_buf = s:create_result_buf()
         let s:state.prompt_buf = s:create_prompt_buf()
@@ -226,7 +227,7 @@ func! s:update_results() abort
     let input = s:get_prompt_value()
 
     if input !~ '^\s*$'
-        let [items, highlights] = matchfuzzypos(items, input)
+        let [items, highlights] = matchfuzzypos(items, input)[0:s:state.maxitems]
     endif
 
     " FIXME: when job update buffer cursorline gets back to the first line...
