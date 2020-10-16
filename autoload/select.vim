@@ -36,7 +36,11 @@ let s:sink = extend(s:sink, get(g:, "select_sink", {}), "force")
 
 
 func! select#do(type, ...) abort
+    " FIXME: probably default s:runner and s:sink should be restored on each
+    " run here
+    let s:runner = extend(s:runner, get(g:, "select_runner", {}), "force")
     let s:runner = extend(s:runner, get(b:, "select_runner", {}), "force")
+    let s:sink = extend(s:sink, get(g:, "select_sink", {}), "force")
     let s:sink = extend(s:sink, get(b:, "select_sink", {}), "force")
 
     if !empty(a:type)
