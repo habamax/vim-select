@@ -5,7 +5,7 @@ let s:sink_def = {}
 let s:sink_def.file = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
 let s:sink_def.projectfile = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
 let s:sink_def.mru = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
-let s:sink_def.buffer = {"transform": {_, v -> matchstr(v, '^\d\+')}, "action": "buffer %s", "action_split": "sbuffer %s", "action_vsplit": "vert sbuffer %s"}
+let s:sink_def.buffer = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "buffer %s", "action_split": "sbuffer %s", "action_vsplit": "vert sbuffer %s"}
 let s:sink_def.colors = "colorscheme %s"
 let s:sink_def.command = ":%s"
 
