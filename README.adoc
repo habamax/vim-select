@@ -1,4 +1,4 @@
-= [WIP] vim-select: fuzzy select file/buffer/MRU/etc
+= vim-select: fuzzy select file/buffer/MRU/etc
 
 Plugin works with recent (nightly) vim having `matchfuzzypos()` function and
 `prompt-buffer` feature implemented.
@@ -8,6 +8,10 @@ matching and select with `<CR>` or `<Tab>` if only 1 candidate is in the list.
 
 For files it will let you go to parent directory with `<BS>` and to selected
 directory with `<CR>`.
+
+Project wide file search uses either `ripgrep` or `fd` tool so be sure you have
+one of them installed on your system. By default it uses vim current working
+directory as a project root.
 
 
 image::https://user-images.githubusercontent.com/234774/95853492-30b22400-0d5e-11eb-9a18-934752f5c22f.gif[]
