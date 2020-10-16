@@ -26,7 +26,7 @@ else
     let s:runner_def.projectfile = ""
 endif
 
-let s:runner_def.buffer = {-> map(getbufinfo({'buflisted': 1}), {k, v -> v.bufnr .. ": " .. (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name))})}
+let s:runner_def.buffer = {-> map(getbufinfo({'buflisted': 1}), {k, v -> printf("%3d: %s", v.bufnr, (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name)))})}
 let s:runner_def.colors = {-> getcompletion('', 'color')}
 let s:runner_def.command = {-> getcompletion('', 'command')}
 let s:runner_def.mru = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
