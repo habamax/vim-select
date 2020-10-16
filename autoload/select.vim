@@ -1,47 +1,55 @@
 let s:state = {}
 
 
-let s:sink = {}
-let s:sink.file = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
-let s:sink.projectfile = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
-let s:sink.mru = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
-let s:sink.buffer = {"transform": {_, v -> matchstr(v, '^\d\+')}, "action": "buffer %s", "action_split": "sbuffer %s", "action_vsplit": "vert sbuffer %s"}
-let s:sink.colors = "colorscheme %s"
-let s:sink.command = ":%s"
+let s:sink_def = {}
+let s:sink_def.file = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
+let s:sink_def.projectfile = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
+let s:sink_def.mru = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
+let s:sink_def.buffer = {"transform": {_, v -> matchstr(v, '^\d\+')}, "action": "buffer %s", "action_split": "sbuffer %s", "action_vsplit": "vert sbuffer %s"}
+let s:sink_def.colors = "colorscheme %s"
+let s:sink_def.command = ":%s"
 
 
-let s:runner = {}
-let s:runner.file = {->
+let s:runner_def = {}
+let s:runner_def.file = {->
             \  map(readdirex(s:state.path, {d -> d.type == 'dir'}), {k,v -> v.type == "dir" ? v.name..'/' : v.name})
             \+ map(readdirex(s:state.path, {d -> d.type != 'dir'}), {_,v -> v.name})
             \ }
 
 if executable('rg')
-    let s:runner.projectfile = {"cmd": "rg --files --no-ignore-vcs --hidden --glob !.git"}
+    let s:runner_def.projectfile = {"cmd": "rg --files --no-ignore-vcs --hidden --glob !.git"}
 elseif executable('fd')
-    let s:runner.projectfile = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
+    let s:runner_def.projectfile = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
 elseif executable('fdfind')
-    let s:runner.projectfile = {"cmd": "fdfind --type f --hidden --follow --no-ignore-vcs --exclude .git"}
+    let s:runner_def.projectfile = {"cmd": "fdfind --type f --hidden --follow --no-ignore-vcs --exclude .git"}
 else
-    let s:runner.projectfile = ""
+    let s:runner_def.projectfile = ""
 endif
 
-let s:runner.buffer = {-> map(getbufinfo({'buflisted': 1}), {k, v -> v.bufnr .. ": " .. (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name))})}
-let s:runner.colors = {-> getcompletion('', 'color')}
-let s:runner.command = {-> getcompletion('', 'command')}
-let s:runner.mru = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
+let s:runner_def.buffer = {-> map(getbufinfo({'buflisted': 1}), {k, v -> v.bufnr .. ": " .. (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name))})}
+let s:runner_def.colors = {-> getcompletion('', 'color')}
+let s:runner_def.command = {-> getcompletion('', 'command')}
+let s:runner_def.mru = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
 
-let s:runner = extend(s:runner, get(g:, "select_runner", {}), "force")
-let s:sink = extend(s:sink, get(g:, "select_sink", {}), "force")
+"" Merge global defined runners and sinks
+call extend(s:runner_def, get(g:, "select_runner", {}), "force")
+call extend(s:sink_def, get(g:, "select_sink", {}), "force")
+
+let s:runner = {}
+let s:sink = {}
 
 
 func! select#do(type, ...) abort
-    " FIXME: probably default s:runner and s:sink should be restored on each
-    " run here
-    let s:runner = extend(s:runner, get(g:, "select_runner", {}), "force")
-    let s:runner = extend(s:runner, get(b:, "select_runner", {}), "force")
-    let s:sink = extend(s:sink, get(g:, "select_sink", {}), "force")
-    let s:sink = extend(s:sink, get(b:, "select_sink", {}), "force")
+    "" Global runners and sinks might be updated in the current vim session.
+    "" Merge them with default
+    call extend(s:runner_def, get(g:, "select_runner", {}), "force")
+    call extend(s:sink_def, get(g:, "select_sink", {}), "force")
+
+    "" Always start with default and add buffer local runners and sinks
+    let s:runner = s:runner_def->deepcopy()
+    let s:sink = s:sink_def->deepcopy()
+    call extend(s:runner, get(b:, "select_runner", {}), "force")
+    call extend(s:sink, get(b:, "select_sink", {}), "force")
 
     if !empty(a:type)
         if index(s:runner->keys(), a:type) == -1
@@ -99,9 +107,9 @@ func! select#command_complete(A,L,P)
     " Complete subcommand
     if len(cmd_parts) <= 2
         if empty(a:A)
-            return s:runner->keys()
+            return s:runner_def->keys()
         else
-            return s:runner->keys()->matchfuzzy(a:A)
+            return s:runner_def->keys()->matchfuzzy(a:A)
         endif
     elseif len(cmd_parts) <=3
         " Complete directory
