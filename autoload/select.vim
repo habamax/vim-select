@@ -166,8 +166,10 @@ func! s:prepare_buffer(type)
             syn match SelectDirectory '^.*/$'
             hi def link SelectDirectory Directory
         else
-            syn match SelectDirectoryPrefix '^\(\d\+:\)\?\zs.*[/\\]\ze.*$'
+            syn match SelectBufferNumber '^\(\s*\d\+:\)'
+            syn match SelectDirectoryPrefix '\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$'
             hi def link SelectDirectoryPrefix Comment
+            hi def link SelectBufferNumber Identifier
         endif
         hi def link SelectMatched Statement
         try
