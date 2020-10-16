@@ -1,60 +1,61 @@
 let s:state = {}
 
 
-let s:sink_def = {}
-let s:sink_def.file = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
-let s:sink_def.projectfile = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
-let s:sink_def.mru = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
-let s:sink_def.buffer = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "buffer %s", "action_split": "sbuffer %s", "action_vsplit": "vert sbuffer %s"}
-let s:sink_def.colors = "colorscheme %s"
-let s:sink_def.command = ":%s"
+let s:select_def = {}
+let s:select_def.file = {}
+let s:select_def.projectfile = {}
+let s:select_def.mru = {}
+let s:select_def.buffer = {}
+let s:select_def.colors = {}
+let s:select_def.command = {}
 
-
-let s:runner_def = {}
-let s:runner_def.file = {->
+let s:select_def.file.data = {->
             \  map(readdirex(s:state.path, {d -> d.type == 'dir'}), {k,v -> v.type == "dir" ? v.name..'/' : v.name})
             \+ map(readdirex(s:state.path, {d -> d.type != 'dir'}), {_,v -> v.name})
             \ }
+let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
 
 if executable('rg')
-    let s:runner_def.projectfile = {"cmd": "rg --files --no-ignore-vcs --hidden --glob !.git"}
+    let s:select_def.projectfile.data = {"cmd": "rg --files --no-ignore-vcs --hidden --glob !.git"}
 elseif executable('fd')
-    let s:runner_def.projectfile = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
+    let s:select_def.projectfile.data = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
 elseif executable('fdfind')
-    let s:runner_def.projectfile = {"cmd": "fdfind --type f --hidden --follow --no-ignore-vcs --exclude .git"}
+    let s:select_def.projectfile.data = {"cmd": "fdfind --type f --hidden --follow --no-ignore-vcs --exclude .git"}
 else
-    let s:runner_def.projectfile = ""
+    let s:select_def.projectfile.data = ""
 endif
+let s:select_def.projectfile.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
 
-let s:runner_def.buffer = {-> s:getbufferlist()}
-let s:runner_def.colors = {-> s:getcolors()}
-let s:runner_def.command = {-> getcompletion('', 'command')}
-let s:runner_def.mru = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
+let s:select_def.mru.data = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
+let s:select_def.mru.sink = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
+
+let s:select_def.buffer.data = {-> s:getbufferlist()}
+let s:select_def.buffer.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "buffer %s", "action_split": "sbuffer %s", "action_vsplit": "vert sbuffer %s"}
+
+let s:select_def.colors.data = {-> s:getcolors()}
+let s:select_def.colors.sink = "colorscheme %s"
+
+let s:select_def.command.data = {-> getcompletion('', 'command')}
+let s:select_def.command.sink = ":%s"
 
 
 "" Merge global defined runners and sinks
-call extend(s:runner_def, get(g:, "select_runner", {}), "force")
-call extend(s:sink_def, get(g:, "select_sink", {}), "force")
+call extend(s:select_def, get(g:, "select_runner", {}), "force")
 
-
-let s:runner = {}
-let s:sink = {}
+let s:select = {}
 
 
 func! select#do(type, ...) abort
     "" Global runners and sinks might be updated in the current vim session.
     "" Merge them with default
-    call extend(s:runner_def, get(g:, "select_runner", {}), "force")
-    call extend(s:sink_def, get(g:, "select_sink", {}), "force")
+    call extend(s:select_def, get(g:, "select_runner", {}), "force")
 
     "" Always start with default and add buffer local runners and sinks
-    let s:runner = s:runner_def->deepcopy()
-    let s:sink = s:sink_def->deepcopy()
-    call extend(s:runner, get(b:, "select_runner", {}), "force")
-    call extend(s:sink, get(b:, "select_sink", {}), "force")
+    let s:select = s:select_def->deepcopy()
+    call extend(s:select, get(b:, "select_runner", {}), "force")
 
     if !empty(a:type)
-        if index(s:runner->keys(), a:type) == -1
+        if index(s:select->keys(), a:type) == -1
             echomsg a:type.." is not supported!"
             return
         endif
@@ -109,9 +110,9 @@ func! select#command_complete(A,L,P)
     " Complete subcommand
     if len(cmd_parts) <= 2
         if empty(a:A)
-            return s:runner_def->keys()
+            return s:select_def->keys()
         else
-            return s:runner_def->keys()->matchfuzzy(a:A)
+            return s:select_def->keys()->matchfuzzy(a:A)
         endif
     elseif len(cmd_parts) <=3
         " Complete directory
@@ -237,16 +238,16 @@ func! s:on_select(...) abort
     call s:close()
 
     let cmd = {}
-    if type(s:sink[s:state.type]) == v:t_string
-        let cmd.s = s:sink[s:state.type]
-    elseif type(s:sink[s:state.type]) == v:t_dict
+    if type(s:select[s:state.type].sink) == v:t_string
+        let cmd.s = s:select[s:state.type].sink
+    elseif type(s:select[s:state.type].sink) == v:t_dict
         if a:0 == 1
-            let cmd.s = s:sink[s:state.type][a:1]
+            let cmd.s = s:select[s:state.type].sink[a:1]
         else
-            let cmd.s = s:sink[s:state.type]['action']
+            let cmd.s = s:select[s:state.type].sink['action']
         endif
-        if s:sink[s:state.type]->has_key("transform")
-            let current_res = s:sink[s:state.type]["transform"](s:state.path, current_res)
+        if s:select[s:state.type].sink->has_key("transform")
+            let current_res = s:select[s:state.type].sink["transform"](s:state.path, current_res)
         endif
     endif
 
@@ -259,10 +260,10 @@ endfunc
 
 
 func! s:update_results() abort
-    if empty(s:state.cached_items) && type(s:runner[s:state.type]) == v:t_func
-        let s:state.cached_items = s:runner[s:state.type]()
-    elseif s:state.job == v:null && type(s:runner[s:state.type]) == v:t_dict
-        let s:state.job = job_start(s:runner[s:state.type]["cmd"], {
+    if empty(s:state.cached_items) && type(s:select[s:state.type].data) == v:t_func
+        let s:state.cached_items = s:select[s:state.type].data()
+    elseif s:state.job == v:null && type(s:select[s:state.type].data) == v:t_dict
+        let s:state.job = job_start(s:select[s:state.type].data["cmd"], {
                     \ "out_cb": "select#job_out",
                     \ "close_cb": "select#job_close",
                     \ "cwd": s:state.path})
