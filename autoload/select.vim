@@ -31,9 +31,11 @@ let s:runner_def.colors = {-> getcompletion('', 'color')}
 let s:runner_def.command = {-> getcompletion('', 'command')}
 let s:runner_def.mru = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
 
+
 "" Merge global defined runners and sinks
 call extend(s:runner_def, get(g:, "select_runner", {}), "force")
 call extend(s:sink_def, get(g:, "select_sink", {}), "force")
+
 
 let s:runner = {}
 let s:sink = {}
@@ -208,6 +210,7 @@ func! s:close() abort
         let &ruler = s:state.ruler
     endtry
 endfunc
+
 
 func! s:on_cancel() abort
     call s:close()
