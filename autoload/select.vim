@@ -27,7 +27,7 @@ else
 endif
 
 let s:runner_def.buffer = {-> s:getbufferlist()}
-let s:runner_def.colors = {-> getcompletion('', 'color')}
+let s:runner_def.colors = {-> s:getcolors()}
 let s:runner_def.command = {-> getcompletion('', 'command')}
 let s:runner_def.mru = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
 
@@ -434,4 +434,14 @@ func! s:getbufferlist() abort
     let l:Sort = {a, b -> a.lastused == b.lastused ? 0 : a.lastused > b.lastused ? -1 : 1}
     let buflist = sort(getbufinfo({'buflisted': 1}), l:Sort)
     return map(buflist[1:1] + buflist[0:0] + buflist[2:], {k, v -> printf("%3d: %s", v.bufnr, (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name)))})
+endfunc
+
+
+"" Colorscheme list.
+"" * remove current colorscheme name  from the list of all sorted colorschemes.
+"" * put current colorscheme name on top of the colorscheme list.
+"" Thus current colorscheme is initially preselected.
+func! s:getcolors() abort
+    let colors_name = get(g:, "colors_name", "default")
+    return [colors_name] + filter(getcompletion('', 'color'), {_, v -> v !~ colors_name})
 endfunc
