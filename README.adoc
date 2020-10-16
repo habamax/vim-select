@@ -64,7 +64,7 @@ Select window has default mappings:
 * `<ESC>` to close the select window.
 * `<TAB>` select next item in the list, for a single item it will open/execute
   it.
-* `<BS>` open parent directory. Only for `SelectFile`.
+* `<BS>` open parent directory. Only for `Select file`.
 * `<C-n>` or `<Down>` select next item.
 * `<C-p>` or `<Up>` select previous item.
 * `<PageUp>` scroll up select window.
@@ -75,17 +75,13 @@ Select window has default mappings:
 == Commands
 
 * `:Select` file from current file directory.
-* `:Select file` from current file directory.
-* `:Select projectfile` from current working directory(and sub-directories)
+* `:Select file` from current file directory. Or from directory passed as an
+  argument.
+* `:Select projectfile` from current working directory(and sub-directories). Or
+  from directory passed as an argument.
 * `:Select buffer` from buffer list.
 * `:Select mru` from `v:oldfiles`.
 * `:Select command` from `:ex` and execute it without parameters.
 * `:Select colors` and apply it.
-* `:SelectFile` from current file directory. Or from directory passed as an
-  argument.
-* `:SelectProjectFile` from current working directory(and sub-directories). Or
-  from directory passed as an argument.
 
-
-NOTE: `:SelectProjectFile` and `:Select projectfile` only work if `ripgrep` or
-`fd` is installed.
+NOTE: `:Select projectfile` only work if `ripgrep` or `fd` is installed.

@@ -94,11 +94,18 @@ func! select#job_close(channel) abort
 endfunc
 
 
-func! select#type_complete(A,L,P)
-    if empty(a:A)
-        return s:runner->keys()
-    else
-        return s:runner->keys()->matchfuzzy(a:A)
+func! select#command_complete(A,L,P)
+    let cmd_parts = split(a:L, '\W\+', 1)
+    " Complete subcommand
+    if len(cmd_parts) <= 2
+        if empty(a:A)
+            return s:runner->keys()
+        else
+            return s:runner->keys()->matchfuzzy(a:A)
+        endif
+    elseif len(cmd_parts) <=3
+        " Complete directory
+        return getcompletion(a:A, 'dir')
     endif
 endfunc
 

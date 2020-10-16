@@ -15,7 +15,10 @@ matching and select with <CR> or <Tab> if only 1 candidate is in the list.
 For files it will let you go to parent directory with <BS> and to selected
 directory with <CR>.
 
-NOTE: No "project-wide" file selection like fzf or ctrlp have. Yet.
+Project wide file search uses either `ripgrep` or `fd` tool so be sure you have
+one of them installed on your system. By default it uses vim current working
+directory as a project root.
+
 
 
 MAPPINGS                                                     *select-mappings*
@@ -76,14 +79,16 @@ COMMANDS                                                     *select-commands*
 Select file from current file directory.
 
 
-:Select file                                                    *:Select_file*
+:Select file <dir>                                              *:Select_file*
 
 Select file from current file directory.
+Accepts directory as an argument.
 
 
-:Select projectfile                                      *:Select_projectfile*
+:Select projectfile <dir>                                *:Select_projectfile*
 
 Select project file from current working directory(and sub-directories).
+Accepts directory as an argument.
 
 NOTE: only works if ripgrep or fd is installed.
 
@@ -107,17 +112,3 @@ Select :ex command and execute it.
 :Select colors                                                *:Select_colors*
 
 Select colorscheme and apply it.
-
-
-:SelectFile <dir>                                                *:SelectFile*
-
-Select file from current file directory.
-Accepts directory as an argument.
-
-
-:SelectProjectFile <dir>                                  *:SelectProjectFile*
-
-Select project file from current file directory(and sub-directories).
-Accepts directory as an argument.
-
-NOTE: only works if ripgrep or fd is installed.
