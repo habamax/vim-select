@@ -26,7 +26,7 @@ else
     let s:runner_def.projectfile = ""
 endif
 
-let s:runner_def.buffer = {-> map(getbufinfo({'buflisted': 1}), {k, v -> printf("%3d: %s", v.bufnr, (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name)))})}
+let s:runner_def.buffer = {-> s:getbufferlist()}
 let s:runner_def.colors = {-> getcompletion('', 'color')}
 let s:runner_def.command = {-> getcompletion('', 'command')}
 let s:runner_def.mru = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
@@ -422,4 +422,16 @@ func! s:shorten_bufname(bname)
         endif
     endfor
     return res
+endfunc
+
+
+"" Buffer list is sorted by lastused time + 2 most recently used buffers
+"" are exchanged/switched:
+"" * second lastused is the first in the list
+"" * first lastused is the second in the list
+"" Thus you can easily switch between 2 buffers with :Select buffer and <CR>
+func! s:getbufferlist() abort
+    let l:Sort = {a, b -> a.lastused == b.lastused ? 0 : a.lastused > b.lastused ? -1 : 1}
+    let buflist = sort(getbufinfo({'buflisted': 1}), l:Sort)
+    return map(buflist[1:1] + buflist[0:0] + buflist[2:], {k, v -> printf("%3d: %s", v.bufnr, (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name)))})
 endfunc
