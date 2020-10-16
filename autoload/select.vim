@@ -53,7 +53,7 @@ func! select#do(type, ...) abort
         let s:state.showmode = &showmode
         let s:state.ruler = &ruler
 
-        if index(['file', 'projectfile'], a:type) != -1 && a:0 == 1 && !empty(a:1)
+        if a:0 == 1 && !empty(a:1)
             let s:state.path = s:normalize_path(fnamemodify(a:1, "%:p")..'/')
         elseif a:type == 'file'
             let s:state.path = s:normalize_path(expand("%:p:h")..'/')
