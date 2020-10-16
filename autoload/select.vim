@@ -212,19 +212,25 @@ func! s:on_select(...) abort
 
     call s:close()
 
+    let cmd = {}
     if type(s:sink[s:state.type]) == v:t_string
-        let cmd = s:sink[s:state.type]
+        let cmd.s = s:sink[s:state.type]
     elseif type(s:sink[s:state.type]) == v:t_dict
         if a:0 == 1
-            let cmd = s:sink[s:state.type][a:1]
+            let cmd.s = s:sink[s:state.type][a:1]
         else
-            let cmd = s:sink[s:state.type]['edit']
+            let cmd.s = s:sink[s:state.type]['edit']
         endif
         if s:sink[s:state.type]->has_key("transform")
             let current_res = s:sink[s:state.type]["transform"](s:state.path, current_res)
         endif
     endif
-    exe printf(cmd, current_res)
+
+    if type(cmd.s) == v:t_string
+        exe printf(cmd.s, current_res)
+    elseif type(cmd.s) == v:t_func
+        call cmd.s(current_res)
+    endif
 endfunc
 
 
