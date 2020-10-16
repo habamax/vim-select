@@ -2,10 +2,10 @@ let s:state = {}
 
 
 let s:sink = {}
-let s:sink.file = {"transform": {p, v -> fnameescape(p..v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
-let s:sink.projectfile = {"transform": {p, v -> fnameescape(p..v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
-let s:sink.mru = {"transform": {_, v -> fnameescape(v)}, "edit": "edit %s", "split": "split %s", "vsplit": "vsplit %s"}
-let s:sink.buffer = {"transform": {_, v -> matchstr(v, '^\d\+')}, "edit": "buffer %s", "split": "sbuffer %s", "vsplit": "vert sbuffer %s"}
+let s:sink.file = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
+let s:sink.projectfile = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
+let s:sink.mru = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
+let s:sink.buffer = {"transform": {_, v -> matchstr(v, '^\d\+')}, "action": "buffer %s", "action_split": "sbuffer %s", "action_vsplit": "vert sbuffer %s"}
 let s:sink.colors = "colorscheme %s"
 let s:sink.command = ":%s"
 
@@ -223,7 +223,7 @@ func! s:on_select(...) abort
         if a:0 == 1
             let cmd.s = s:sink[s:state.type][a:1]
         else
-            let cmd.s = s:sink[s:state.type]['edit']
+            let cmd.s = s:sink[s:state.type]['action']
         endif
         if s:sink[s:state.type]->has_key("transform")
             let current_res = s:sink[s:state.type]["transform"](s:state.path, current_res)
@@ -360,9 +360,9 @@ endfunc
 
 func! s:add_prompt_mappings() abort
     inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
-    inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('split')<CR>
-    inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('split')<CR>
-    inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('vsplit')<CR>
+    inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('action_split')<CR>
+    inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action_split')<CR>
+    inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('action_vsplit')<CR>
     inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
     inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
     inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
