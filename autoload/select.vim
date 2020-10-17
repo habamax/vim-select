@@ -39,20 +39,20 @@ let s:select_def.command.data = {-> getcompletion('', 'command')}
 let s:select_def.command.sink = ":%s"
 
 
-"" Merge global defined runners and sinks
-call extend(s:select_def, get(g:, "select_runner", {}), "force")
+"" Merge global defined select_info
+call extend(s:select_def, get(g:, "select_info", {}), "force")
 
 let s:select = {}
 
 
 func! select#do(type, ...) abort
-    "" Global runners and sinks might be updated in the current vim session.
+    "" Global select_info might be updated in the current vim session.
     "" Merge them with default
-    call extend(s:select_def, get(g:, "select_runner", {}), "force")
+    call extend(s:select_def, get(g:, "select_info", {}), "force")
 
-    "" Always start with default and add buffer local runners and sinks
+    "" Always start with default and add buffer local select_info
     let s:select = s:select_def->deepcopy()
-    call extend(s:select, get(b:, "select_runner", {}), "force")
+    call extend(s:select, get(b:, "select_info", {}), "force")
 
     if !empty(a:type)
         if index(s:select->keys(), a:type) == -1
