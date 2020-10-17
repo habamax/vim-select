@@ -4,6 +4,7 @@ let s:state = {}
 let s:select_def = {}
 let s:select_def.file = {}
 let s:select_def.projectfile = {}
+let s:select_def.project = {}
 let s:select_def.mru = {}
 let s:select_def.buffer = {}
 let s:select_def.colors = {}
@@ -38,6 +39,8 @@ let s:select_def.colors.sink = "colorscheme %s"
 let s:select_def.command.data = {-> getcompletion('', 'command')}
 let s:select_def.command.sink = ":%s"
 
+let s:select_def.project.data = {-> s:get_project_list()}
+let s:select_def.project.sink = {"action": "Select projectfile %s", "action2": "Select file %s"}
 
 "" Merge global defined select_info
 call extend(s:select_def, get(g:, "select_info", {}), "force")
@@ -233,6 +236,11 @@ func! s:on_select(...) abort
         call s:update_results()
         startinsert!
         return
+    endif
+
+    if s:state.type == 'projectfile'
+        call s:add_project(s:state.path)
+        call s:save_project_list()
     endif
 
     call s:close()
@@ -445,4 +453,41 @@ endfunc
 func! s:get_colorscheme_list() abort
     let colors_name = get(g:, "colors_name", "default")
     return [colors_name] + filter(getcompletion('', 'color'), {_, v -> v != colors_name})
+endfunc
+
+
+"" Project list.
+"" List of current working directories where :Select projectfile was run.
+func! s:get_project_list() abort
+    if s:state->has_key("projects")
+        return s:state["projects"]
+    endif
+    try
+        let fname = fnamemodify(expand("$MYVIMRC"), ":p:h").."/.selectprojects"
+        let s:state["projects"] = readfile(fname)
+        return s:state["projects"]
+    catch
+    endtry
+    return []
+endfunc
+
+
+func! s:save_project_list() abort
+    if !s:state->has_key("projects") || len(s:state["projects"]) == 0
+        return
+    endif
+    try
+        let fname = fnamemodify(expand("$MYVIMRC"), ":p:h").."/.selectprojects"
+        call writefile(s:state["projects"], fname)
+    catch
+    endtry
+endfunc
+
+
+func! s:add_project(project) abort
+    if !s:state->has_key("projects")
+        let s:state["projects"] = []
+    endif
+    let project = trim(a:project, "/", 2)
+    let s:state["projects"] = [project] + filter(s:state["projects"], {_, v -> v != project})
 endfunc

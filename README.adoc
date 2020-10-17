@@ -35,8 +35,9 @@ There are no default global mappings, add your own
 ------------------------------------------------------------------------------
 " add it to ~/.vim/after/plugin/select.vim
 if exists("g:loaded_select")
-    nmap <leader>f <Plug>(SelectFile)
-    nmap <leader>p <Plug>(SelectProjectFile)
+    nmap <leader>fo <Plug>(SelectFile)
+    nmap <leader>ff <Plug>(SelectProjectFile)
+    nmap <leader>fp <Plug>(SelectProject)
     nmap <leader>b <Plug>(SelectBuffer)
     nmap <leader>m <Plug>(SelectMRU)
     nmap <leader>; <Plug>(SelectCmd)
@@ -49,8 +50,9 @@ or
 [source,vim]
 ------------------------------------------------------------------------------
 " add it to your vimrc
-nmap <leader>f <Plug>(SelectFile)
-nmap <leader>p <Plug>(SelectProjectFile)
+nmap <leader>fo <Plug>(SelectFile)
+nmap <leader>ff <Plug>(SelectProjectFile)
+nmap <leader>fp <Plug>(SelectProject)
 nmap <leader>b <Plug>(SelectBuffer)
 nmap <leader>m <Plug>(SelectMRU)
 nmap <leader>; <Plug>(SelectCmd)
@@ -75,13 +77,24 @@ Select window has default mappings:
 == Commands
 
 * `:Select` file from current file directory.
+
 * `:Select file` from current file directory. Or from directory passed as an
   argument.
+
 * `:Select projectfile` from current working directory(and sub-directories). Or
   from directory passed as an argument.
+
+* `:Select project` from the list of projects and run `:Select projectfile` on
+  it. Each project is a current working directory where `:Select projectfile`
+  was run and a file was selected. The list is persisted in
+  `~/.vim/.selectprojects` or `~/.selectprojects` file.
+
 * `:Select buffer` from buffer list.
+
 * `:Select mru` from `v:oldfiles`.
+
 * `:Select command` from `:ex` and execute it without parameters.
+
 * `:Select colors` and apply it.
 
 NOTE: `:Select projectfile` only work if `ripgrep` or `fd` is installed.

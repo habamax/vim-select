@@ -30,8 +30,9 @@ Safe (will not create mappings if plugin was not loaded):
 >
     " add it to ~/.vim/after/plugin/select.vim
     if exists("g:loaded_select")
-        nmap <leader>f <Plug>(SelectFile)
-        nmap <leader>p <Plug>(SelectProjectFile)
+        nmap <leader>fo <Plug>(SelectFile)
+        nmap <leader>ff <Plug>(SelectProjectFile)
+        nmap <leader>fp <Plug>(SelectProject)
         nmap <leader>b <Plug>(SelectBuffer)
         nmap <leader>m <Plug>(SelectMRU)
         nmap <leader>; <Plug>(SelectCmd)
@@ -39,9 +40,9 @@ Safe (will not create mappings if plugin was not loaded):
 
 or regular:
 >
-    " add it to your vimrc
-    nmap <leader>f <Plug>(SelectFile)
-    nmap <leader>p <Plug>(SelectProjectFile)
+    nmap <leader>fo <Plug>(SelectFile)
+    nmap <leader>ff <Plug>(SelectProjectFile)
+    nmap <leader>fp <Plug>(SelectProject)
     nmap <leader>b <Plug>(SelectBuffer)
     nmap <leader>m <Plug>(SelectMRU)
     nmap <leader>; <Plug>(SelectCmd)
@@ -91,6 +92,16 @@ Select project file from current working directory(and sub-directories).
 Accepts directory as an argument.
 
 NOTE: only works if ripgrep or fd is installed.
+
+
+:Select project                                              *:Select_project*
+
+Select project from the list of projects and run |:Select_projectfile| on
+it. Each project is a current working directory where |:Select_projectfile|
+was run and a file was selected.
+
+The list of projects is persisted in `~/.vim/.selectprojects` or
+`~/.selectprojects` file.
 
 
 

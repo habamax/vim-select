@@ -12,6 +12,7 @@ command! -nargs=* -complete=customlist,select#command_complete Select call selec
 
 nnoremap <silent> <Plug>(SelectFile) :Select file<CR>
 nnoremap <silent> <Plug>(SelectProjectFile) :Select projectfile<CR>
+nnoremap <silent> <Plug>(SelectProject) :Select project<CR>
 nnoremap <silent> <Plug>(SelectBuffer) :Select buffer<CR>
 nnoremap <silent> <Plug>(SelectMRU) :Select mru<CR>
 nnoremap <silent> <Plug>(SelectCmd) :Select command<CR>
