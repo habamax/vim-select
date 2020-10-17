@@ -13,7 +13,7 @@ let s:select_def.file.data = {->
             \  map(readdirex(s:state.path, {d -> d.type == 'dir'}), {k,v -> v.type == "dir" ? v.name..'/' : v.name})
             \+ map(readdirex(s:state.path, {d -> d.type != 'dir'}), {_,v -> v.name})
             \ }
-let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
+let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s"}
 
 if executable('rg')
     let s:select_def.projectfile.data = {"cmd": "rg --files --no-ignore-vcs --hidden --glob !.git"}
@@ -24,13 +24,13 @@ elseif executable('fdfind')
 else
     let s:select_def.projectfile.data = ""
 endif
-let s:select_def.projectfile.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
+let s:select_def.projectfile.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s"}
 
 let s:select_def.mru.data = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
-let s:select_def.mru.sink = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action_split": "split %s", "action_vsplit": "vsplit %s"}
+let s:select_def.mru.sink = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s"}
 
 let s:select_def.buffer.data = {-> s:getbufferlist()}
-let s:select_def.buffer.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "buffer %s", "action_split": "sbuffer %s", "action_vsplit": "vert sbuffer %s"}
+let s:select_def.buffer.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "buffer %s", "action2": "sbuffer %s", "action3": "vert sbuffer %s"}
 
 let s:select_def.colors.data = {-> s:getcolors()}
 let s:select_def.colors.sink = "colorscheme %s"
@@ -381,9 +381,9 @@ endfunc
 
 func! s:add_prompt_mappings() abort
     inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
-    inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('action_split')<CR>
-    inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action_split')<CR>
-    inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('action_vsplit')<CR>
+    inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('action2')<CR>
+    inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action2')<CR>
+    inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('action3')<CR>
     inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
     inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
     inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
