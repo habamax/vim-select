@@ -444,5 +444,5 @@ endfunc
 "" Thus current colorscheme is initially preselected.
 func! s:get_colorscheme_list() abort
     let colors_name = get(g:, "colors_name", "default")
-    return [colors_name] + filter(getcompletion('', 'color'), {_, v -> v !~ colors_name})
+    return [colors_name] + filter(getcompletion('', 'color'), {_, v -> v != colors_name})
 endfunc
