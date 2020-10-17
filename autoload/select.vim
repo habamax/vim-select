@@ -29,10 +29,10 @@ let s:select_def.projectfile.sink = {"transform": {p, v -> fnameescape(p..v)}, "
 let s:select_def.mru.data = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
 let s:select_def.mru.sink = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s"}
 
-let s:select_def.buffer.data = {-> s:getbufferlist()}
+let s:select_def.buffer.data = {-> s:get_buffer_list()}
 let s:select_def.buffer.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "buffer %s", "action2": "sbuffer %s", "action3": "vert sbuffer %s"}
 
-let s:select_def.colors.data = {-> s:getcolors()}
+let s:select_def.colors.data = {-> s:get_colorscheme_list()}
 let s:select_def.colors.sink = "colorscheme %s"
 
 let s:select_def.command.data = {-> getcompletion('', 'command')}
@@ -431,7 +431,7 @@ endfunc
 "" * second lastused is the first in the list
 "" * first lastused is the second in the list
 "" Thus you can easily switch between 2 buffers with :Select buffer and <CR>
-func! s:getbufferlist() abort
+func! s:get_buffer_list() abort
     let l:Sort = {a, b -> a.lastused == b.lastused ? 0 : a.lastused > b.lastused ? -1 : 1}
     let buflist = sort(getbufinfo({'buflisted': 1}), l:Sort)
     return map(buflist[1:1] + buflist[0:0] + buflist[2:], {k, v -> printf("%3d: %s", v.bufnr, (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name)))})
@@ -442,7 +442,7 @@ endfunc
 "" * remove current colorscheme name  from the list of all sorted colorschemes.
 "" * put current colorscheme name on top of the colorscheme list.
 "" Thus current colorscheme is initially preselected.
-func! s:getcolors() abort
+func! s:get_colorscheme_list() abort
     let colors_name = get(g:, "colors_name", "default")
     return [colors_name] + filter(getcompletion('', 'color'), {_, v -> v !~ colors_name})
 endfunc
