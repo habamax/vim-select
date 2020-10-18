@@ -459,16 +459,15 @@ endfunc
 "" Project list.
 "" List of current working directories where :Select projectfile was run.
 func! s:get_project_list() abort
-    if s:state->has_key("projects")
-        return s:state["projects"]
+    if !s:state->has_key("projects")
+        let s:state["projects"] = []
     endif
     try
         let fname = fnamemodify(expand("$MYVIMRC"), ":p:h").."/.selectprojects"
         let s:state["projects"] = readfile(fname)
-        return s:state["projects"]
     catch
     endtry
-    return []
+    return s:state["projects"]
 endfunc
 
 
@@ -486,7 +485,7 @@ endfunc
 
 func! s:add_project(project) abort
     if !s:state->has_key("projects")
-        let s:state["projects"] = []
+        let s:state["projects"] = s:get_project_list()
     endif
     let project = trim(a:project, "/", 2)
     let s:state["projects"] = [project] + filter(s:state["projects"], {_, v -> v != project})
