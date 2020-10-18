@@ -120,7 +120,7 @@ func! select#command_complete(A,L,P)
         endif
     elseif len(cmd_parts) > 2
         " Complete directory
-        return getcompletion(a:A, 'dir')
+        return map(getcompletion(a:A, 'dir'), {_, v -> fnameescape(v)})
     endif
 endfunc
 
