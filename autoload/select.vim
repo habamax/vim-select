@@ -117,7 +117,7 @@ func! select#command_complete(A,L,P)
         else
             return s:select_def->keys()->matchfuzzy(a:A)
         endif
-    elseif len(cmd_parts) <=3
+    elseif len(cmd_parts) > 2
         " Complete directory
         return getcompletion(a:A, 'dir')
     endif
