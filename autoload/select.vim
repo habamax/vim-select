@@ -101,6 +101,7 @@ func! select#job_out(channel, msg) abort
     endif
 endfunc
 
+
 func! select#job_close(channel) abort
     if s:state.job != v:null
         call s:update_results()
