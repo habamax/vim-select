@@ -244,14 +244,17 @@ func! s:on_select(...) abort
         call s:save_project_list()
     endif
 
-    call s:close()
-
     let cmd = {}
     if type(s:select[s:state.type].sink) == v:t_string
         let cmd.s = s:select[s:state.type].sink
     elseif type(s:select[s:state.type].sink) == v:t_dict
-        if a:0 == 1
-            let cmd.s = s:select[s:state.type].sink[a:1]
+        if a:0 == 1 
+            if s:select[s:state.type].sink->has_key(a:1)
+                let cmd.s = s:select[s:state.type].sink[a:1]
+            else
+                startinsert!
+                return
+            endif
         else
             let cmd.s = s:select[s:state.type].sink['action']
         endif
@@ -259,6 +262,8 @@ func! s:on_select(...) abort
             let current_res = s:select[s:state.type].sink["transform"](s:state.path, current_res)
         endif
     endif
+
+    call s:close()
 
     if type(cmd.s) == v:t_string
         exe printf(cmd.s, current_res)
