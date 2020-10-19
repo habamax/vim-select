@@ -111,7 +111,8 @@ let g:select_info = {}
 
 And then...
 
-=== I want a basic example
+
+=== Basic example
 
 Let's select something from the list and echo it in vim:
 
@@ -142,7 +143,20 @@ let g:select_info.test.sink = {"action": {v -> ShowMessage(v)}}
 ------------------------------------------------------------------------------
 
 
-=== I want some sessions
+=== Show highlight group
+
+[source,vim]
+------------------------------------------------------------------------------
+let g:select_info.highlight = {}
+let g:select_info.highlight.data = {-> getcompletion('', 'highlight')}
+let g:select_info.highlight.sink = "hi %s"
+------------------------------------------------------------------------------
+
+Then use `:Select highlight` to select and show syntax highlight group
+parameters.
+
+
+=== Loading sessions
 
 Imagine you have all your sessions saved in `~/.vimdata/sessions` folder.
 I do have them there and usually create session with a helper command:
@@ -165,7 +179,7 @@ nnoremap <leader>fs :Select session<CR>
 ------------------------------------------------------------------------------
 
 
-=== I want to play mp3s. Yes, mp3s.
+=== Play mp3. Yes, mp3s.
 
 Funny thing, vim can play mp3s, so just for fun we can select a music file and
 play it:
@@ -185,7 +199,7 @@ value. In this example the value is transformed to be a full path to a mp3
 file.
 
 
-=== I want it to be available only for some filetypes
+=== Filetype specific example
 
 There is `b:select_info` you can use in the same way as `g:select_info`.
 

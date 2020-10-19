@@ -136,7 +136,7 @@ First of all create an "extension point":
 And then...
 
 
-I WANT A BASIC EXAMPLE
+BASIC EXAMPLE
 
 Let's select something from the list and echo it in vim:
 
@@ -163,7 +163,17 @@ You can also provide a dict with action there, like:
     let g:select_info.test.sink = {"action": {v -> ShowMessage(v)}}
 
 
-I WANT SOME SESSIONS
+SHOW HIGHLIGHT GROUP
+>
+    let g:select_info.highlight = {}
+    let g:select_info.highlight.data = {-> getcompletion('', 'highlight')}
+    let g:select_info.highlight.sink = "hi %s"
+
+Then use `:Select highlight` to select and show syntax highlight group
+parameters.
+
+
+LOADING SESSIONS
 
 Imagine you have all your sessions saved in `~/.vimdata/sessions` folder.
 I do have them there and usually create session with a helper command:
@@ -182,7 +192,7 @@ Now to narrow down and source/apply a session you can setup select plugin with:
     nnoremap <leader>fs :Select session<CR>
 
 
-I WANT TO PLAY SOME MUSIC
+PLAY MUSIC
 
 Funny thing, vim can play mp3s, so just for fun we can select a music file and
 play it:
@@ -199,7 +209,7 @@ for an action. It receives a current working directory path and a selected value
 In this example the value is transformed to be a full path to a mp3 file.
 
 
-I WANT IT TO BE AVAILABLE ONLY FOR SOME FILETYPES
+FILETYPE SPECIFIC EXAMPLE
 
 There is `b:select_info` you can use in the same way as `g:select_info`.
 
