@@ -122,7 +122,7 @@ let g:select_info.test.data = {-> ['hello', 'from', 'vim-select', 'plugin']}
 let g:select_info.test.sink = "echomsg '%s'"
 ------------------------------------------------------------------------------
 
-Then wiht the command `:Select test` you can select a value from the list and
+Then with the command `:Select test` you can select a value from the list and
 see it was echoed as a vim message.
 
 `%s` would be substituted with the selected value in the `sink` string
