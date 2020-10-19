@@ -248,14 +248,22 @@ func! s:on_select(...) abort
 
     let cmd = {}
     if type(s:select[s:state.type].sink) == v:t_string
-        let cmd.s = s:select[s:state.type].sink
+        " do nothing if action was specified and sink is a string
+        if a:0 == 1
+            startinsert!
+            return
+        else
+            let cmd.s = s:select[s:state.type].sink
+        endif
     elseif type(s:select[s:state.type].sink) == v:t_dict
-        if a:0 == 1 
-            if s:select[s:state.type].sink->has_key(a:1)
-                let cmd.s = s:select[s:state.type].sink[a:1]
-            else
+        " do nothing if action was specified and sink is a dict without
+        " a corresponding action key
+        if a:0 == 1
+            if !s:select[s:state.type].sink->has_key(a:1)
                 startinsert!
                 return
+            else
+                let cmd.s = s:select[s:state.type].sink[a:1]
             endif
         else
             let cmd.s = s:select[s:state.type].sink['action']
