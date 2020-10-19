@@ -230,6 +230,7 @@ func! s:on_select(...) abort
         return
     endif
 
+    " file is a special case to be able to go down/up directory structure
     if s:state.type == 'file' && current_res =~ '/$'
         let s:state.path ..= current_res
         call setbufline(s:state.prompt_buf.bufnr, '$', '')
@@ -239,6 +240,7 @@ func! s:on_select(...) abort
         return
     endif
 
+    " projectfile is a special case to persist project once file was selected
     if s:state.type == 'projectfile'
         call s:add_project(s:state.path)
         call s:save_project_list()
