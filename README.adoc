@@ -179,6 +179,11 @@ let g:select_info.sound.sink = {"transform": {p, v -> p..v}, "action": {v -> sou
 
 Having this you can `:Select sound ~/Music`, select and play mp3 file.
 
+A new key `"transform"` is to apply additional logic for a value to be passed
+for an action. It receives a current working directory path and a selected
+value. In this example the value is transformed to be a full path to a mp3
+file.
+
 
 === I want it to be available only for some filetypes
 
@@ -196,7 +201,3 @@ let b:select_info.godotscene.data = {"cmd": "rg --files --glob *.tscn"}
 let b:select_info.godotscene.sink = {"transform": {_, v -> fnameescape(v)}, "action": "GodotRun %s"}
 nnoremap <buffer> <leader><leader>f :Select godotscene<CR>
 ------------------------------------------------------------------------------
-
-A new key `"transform"` is to apply additional logic for a value to be passed
-for an action. It receives a current working directory path (which is ignored
-in this example) and a selected value.
