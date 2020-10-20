@@ -117,6 +117,13 @@ Select buffer from buffer list.
 Select file from |v:oldfiles| AKA Most Recently Used.
 
 
+:Select help                                                    *:Select_help*
+
+Select help tag and show relevant help topic.
+
+NOTE: Only work if `ripgrep` is installed.
+
+
 :Select command                                              *:Select_command*
 
 Select :ex command and execute it.

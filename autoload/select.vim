@@ -9,6 +9,7 @@ let s:select_def.mru = {}
 let s:select_def.buffer = {}
 let s:select_def.colors = {}
 let s:select_def.command = {}
+let s:select_def.help = {}
 
 let s:select_def.file.data = {->
             \  map(readdirex(s:state.path, {d -> d.type == 'dir'}), {k,v -> v.type == "dir" ? v.name..'/' : v.name})
@@ -41,6 +42,10 @@ let s:select_def.command.sink = ":%s"
 
 let s:select_def.project.data = {-> s:get_project_list()}
 let s:select_def.project.sink = {"action": "Select projectfile %s", "action2": "Select file %s"}
+
+let s:select_def.help.data = {"cmd": {-> s:get_helptags()}}
+let s:select_def.help.sink = "help %s"
+
 
 "" Merge global defined select_info
 call extend(s:select_def, get(g:, "select_info", {}), "force")
@@ -287,7 +292,14 @@ func! s:update_results() abort
     if empty(s:state.cached_items) && type(s:select[s:state.type].data) == v:t_func
         let s:state.cached_items = s:select[s:state.type].data()
     elseif s:state.job == v:null && type(s:select[s:state.type].data) == v:t_dict
-        let s:state.job = job_start(s:select[s:state.type].data["cmd"], {
+        if type(s:select[s:state.type].data["cmd"]) == v:t_string
+            let cmd = s:select[s:state.type].data["cmd"]
+        elseif type(s:select[s:state.type].data["cmd"]) == v:t_func
+            let cmd = s:select[s:state.type].data["cmd"]()
+        else
+            return
+        endif
+        let s:state.job = job_start(cmd, {
                     \ "out_cb": "select#job_out",
                     \ "close_cb": "select#job_close",
                     \ "cwd": s:state.path})
@@ -506,4 +518,12 @@ func! s:add_project(project) abort
     endif
     let project = trim(a:project, "/", 2)
     let s:state["projects"] = [project] + filter(s:state["projects"], {_, v -> v != project})
+endfunc
+
+
+" List of all help tags/topics.
+" Uses ripgrep.
+func! s:get_helptags() abort
+    let l:help = split(globpath(&runtimepath, 'doc/tags', 1), '\n')
+    return 'rg \A\S+ -No --no-heading --no-filename '..join(map(l:help, {_,v -> fnameescape(v)}))
 endfunc

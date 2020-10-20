@@ -55,6 +55,7 @@ nmap <leader>ff <Plug>(SelectProjectFile)
 nmap <leader>fp <Plug>(SelectProject)
 nmap <leader>b <Plug>(SelectBuffer)
 nmap <leader>m <Plug>(SelectMRU)
+nmap <leader>h <Plug>(SelectHelp)
 nmap <leader>; <Plug>(SelectCmd)
 ------------------------------------------------------------------------------
 
@@ -84,6 +85,8 @@ Select window has default mappings:
 
 * `:Select projectfile` from current working directory(and sub-directories). Or
   from directory passed as an argument.
++
+NOTE: Only work if `ripgrep` or `fd` is installed.
 
 * `:Select project` from the list of projects and run `:Select projectfile` on
   it. Each project is a current working directory where `:Select projectfile`
@@ -94,11 +97,14 @@ Select window has default mappings:
 
 * `:Select mru` from `v:oldfiles`.
 
+* `:Select help` tags from all help files.
++
+NOTE: Only work if `ripgrep` is installed.
+
 * `:Select command` from `:ex` and execute it without parameters.
 
 * `:Select colors` and apply it.
 
-NOTE: `:Select projectfile` only work if `ripgrep` or `fd` is installed.
 
 
 == Extending
