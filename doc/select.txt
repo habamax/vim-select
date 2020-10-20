@@ -4,6 +4,8 @@ Author:  Maxim Kim <https://habamax.github.io>
 URL:     https://github.com/habamax/vim-select
 License: MIT
 
+
+
 INTRODUCTION                                                          *select*
 
 Plugin works with recent (nightly) vim having |matchfuzzypos| function and
@@ -28,8 +30,6 @@ SETTINGS                                                     *select-settings*
 Maximum items to be loaded into result buffer, default 1000.
 >
     let g:select_max_items = 1000
-
-
 
 
 MAPPINGS                                                     *select-mappings*
@@ -76,7 +76,7 @@ DEFAULT SELECT WINDOW MAPPINGS                       *select-default-mappings*
                                                                 *select-<TAB>*
 <TAB> select next item in the list, for a single item it will open/execute it.
 
-<BS> open parent directory. Only for |SelectFile|.              *select-<BS>*
+<BS> open parent directory. Only for |SelectFile|.                 *select-<BS>*
 
 <C-n> or <Down> select next item.                               *select-<C-n>*
 
