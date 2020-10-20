@@ -35,6 +35,7 @@ Safe (will not create mappings if plugin was not loaded):
         nmap <leader>fp <Plug>(SelectProject)
         nmap <leader>b <Plug>(SelectBuffer)
         nmap <leader>m <Plug>(SelectMRU)
+        nmap <leader>h <Plug>(SelectHelp)
         nmap <leader>; <Plug>(SelectCmd)
     endif
 
@@ -45,6 +46,7 @@ or regular:
     nmap <leader>fp <Plug>(SelectProject)
     nmap <leader>b <Plug>(SelectBuffer)
     nmap <leader>m <Plug>(SelectMRU)
+    nmap <leader>h <Plug>(SelectHelp)
     nmap <leader>; <Plug>(SelectCmd)
 
 
