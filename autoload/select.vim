@@ -86,7 +86,7 @@ func! select#do(type, ...) abort
 
         let s:state.init_buf = {"bufnr": bufnr(), "winid": winnr()->win_getid()}
         let s:state.maxheight = &lines/3
-        let s:state.maxitems = 1000
+        let s:state.maxitems = get(g:, "select_max_items", 1000)
         let s:state.result_buf = s:create_result_buf()
         let s:state.prompt_buf = s:create_prompt_buf()
         let s:state.cached_items = []
@@ -304,23 +304,26 @@ func! s:update_results() abort
                     \ "close_cb": "select#job_close",
                     \ "cwd": s:state.path})
     endif
-    let items = s:state.cached_items
 
+    let items = []
     let highlights = []
 
     let input = s:get_prompt_value()
 
     if input !~ '^\s*$'
-        let [items, highlights] = matchfuzzypos(items, input)[0:s:state.maxitems]
+        let [items, highlights] = matchfuzzypos(s:state.cached_items, input)
+        let items = items[0 : s:state.maxitems]
+    else
+        let items = s:state.cached_items[0 : s:state.maxitems]
     endif
 
     call setbufline(s:state.result_buf.bufnr, 1, items)
     silent call deletebufline(s:state.result_buf.bufnr, len(items) + 1, "$")
 
     if !empty(highlights)
-        let top = min([200, len(highlights)])
+        let top = min([200, len(items)])
         for bufline in range(1, top)
-            for pos in highlights[bufline-1]
+            for pos in highlights[bufline - 1]
                 call prop_add(bufline, pos + 1, {'length': 1, 'type': 'select_highlight', 'bufnr': s:state.result_buf.bufnr})
             endfor
         endfor
