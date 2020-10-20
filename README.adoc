@@ -63,6 +63,7 @@ Select window has default mappings:
 * `<CR>` to open/execute current item.
 * `<S-CR>` or `<C-s>` to open current item in split.
 * `<C-v>` to open current item in vertical split.
+* `<C-t>` to open current item in a tab.
 * `<ESC>` to close the select window.
 * `<TAB>` select next item in the list, for a single item it will open/execute
   it.

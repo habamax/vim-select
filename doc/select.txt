@@ -58,6 +58,8 @@ DEFAULT SELECT WINDOW MAPPINGS                       *select-default-mappings*
 
 <C-v> to open current item in vertical split.                   *select_<C-v>*
 
+<C-t> to open current item in a tab.                            *select_<C-v>*
+
                                                                 *select-<TAB>*
 <TAB> select next item in the list, for a single item it will open/execute it.
 
