@@ -95,7 +95,7 @@ Accepts directory as an argument.
 Select project file from current working directory(and sub-directories).
 Accepts directory as an argument.
 
-NOTE: only works if ripgrep or fd is installed.
+NOTE: External tool `ripgrep` or `fd` is required.
 
 
 :Select project                                              *:Select_project*
@@ -123,7 +123,7 @@ Select file from |v:oldfiles| AKA Most Recently Used.
 
 Select help tag and show relevant help topic.
 
-NOTE: Only work if `ripgrep` is installed.
+NOTE: External tool `ripgrep` is required.
 
 
 :Select command                                              *:Select_command*

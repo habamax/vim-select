@@ -87,7 +87,7 @@ Select window has default mappings:
 * `:Select projectfile` from current working directory(and sub-directories). Or
   from directory passed as an argument.
 +
-NOTE: Only work if `ripgrep` or `fd` is installed.
+NOTE: External tool `ripgrep` or `fd` is required.
 
 * `:Select project` from the list of projects and run `:Select projectfile` on
   it. Each project is a current working directory where `:Select projectfile`
@@ -100,7 +100,7 @@ NOTE: Only work if `ripgrep` or `fd` is installed.
 
 * `:Select help` tags from all help files.
 +
-NOTE: Only work if `ripgrep` is installed.
+NOTE: External tool `ripgrep` is required.
 
 * `:Select command` from `:ex` and execute it without parameters.
 
