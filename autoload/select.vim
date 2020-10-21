@@ -84,6 +84,7 @@ func! select#do(type, ...) abort
             let s:state.path = s:normalize_path(getcwd()..'/')
         endif
 
+        let s:state.stl_progress = ''
         let s:state.init_buf = {"bufnr": bufnr(), "winid": winnr()->win_getid()}
         let s:state.maxheight = &lines/3
         let s:state.maxitems = get(g:, "select_max_items", 1000)
@@ -130,12 +131,17 @@ func! select#command_complete(A,L,P)
 endfunc
 
 
-func! select#update_statusline() abort
+func! select#statusline_type() abort
     if s:state.type == 'file' || s:state.type == 'projectfile'
         return "["..s:state.path.."]"
     else
         return "["..s:state.type.."]"
     endif
+endfunc
+
+
+func! select#statusline_progress() abort
+    return s:state.stl_progress
 endfunc
 
 
@@ -169,7 +175,7 @@ func! s:prepare_buffer(type)
     elseif a:type == 'result'
         setlocal buftype=nofile
         set filetype=selectresults
-        setlocal statusline=%#Statusline#%{select#update_statusline()}
+        setlocal statusline=%#Statusline#%{select#statusline_type()}%=%#StatuslineNC#%{select#statusline_progress()}
         setlocal cursorline
         setlocal noruler
         setlocal laststatus=0
@@ -312,10 +318,14 @@ func! s:update_results() abort
 
     if input !~ '^\s*$'
         let [items, highlights] = matchfuzzypos(s:state.cached_items, input)
+        let matched_items_cnt = len(items)
         let items = items[0 : s:state.maxitems]
     else
+        let matched_items_cnt = len(s:state.cached_items)
         let items = s:state.cached_items[0 : s:state.maxitems]
     endif
+
+    let s:state.stl_progress = printf(" %s/%s", matched_items_cnt, len(s:state.cached_items))
 
     call setbufline(s:state.result_buf.bufnr, 1, items)
     silent call deletebufline(s:state.result_buf.bufnr, len(items) + 1, "$")
