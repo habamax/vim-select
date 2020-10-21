@@ -19,6 +19,8 @@ let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "action"
 
 if executable('fd')
     let s:select_def.projectfile.data = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
+elseif executable('fdfind')
+    let s:select_def.projectfile.data = {"cmd": "fdfind --type f --hidden --follow --no-ignore-vcs --exclude .git"}
 elseif executable('rg')
     let s:select_def.projectfile.data = {"cmd": "rg --files --no-ignore-vcs --hidden --glob !.git"}
 elseif !has("win32")
