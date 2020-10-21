@@ -17,12 +17,12 @@ let s:select_def.file.data = {->
             \ }
 let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
 
-if executable('rg')
-    let s:select_def.projectfile.data = {"cmd": "rg --files --no-ignore-vcs --hidden --glob !.git"}
-elseif executable('fd')
+if executable('fd')
     let s:select_def.projectfile.data = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
-elseif executable('fdfind')
-    let s:select_def.projectfile.data = {"cmd": "fdfind --type f --hidden --follow --no-ignore-vcs --exclude .git"}
+elseif executable('rg')
+    let s:select_def.projectfile.data = {"cmd": "rg --files --no-ignore-vcs --hidden --glob !.git"}
+elseif !has("win32")
+    let s:select_def.projectfile.data = {"cmd": "find -type f -not -path \"*/.git/*\""}
 else
     let s:select_def.projectfile.data = ""
 endif
