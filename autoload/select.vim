@@ -106,6 +106,8 @@ endfunc
 func! select#job_out(channel, msg) abort
     if len(s:state.cached_items) < s:state.max_total_items
         call add(s:state.cached_items, a:msg)
+    else
+        call job_stop(s:state.job)
     endif
 
     if s:state.job != v:null && job_status(s:state.job) == "run"
