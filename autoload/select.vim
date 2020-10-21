@@ -321,7 +321,7 @@ func! s:update_results() abort
     silent call deletebufline(s:state.result_buf.bufnr, len(items) + 1, "$")
 
     if !empty(highlights)
-        let top = min([200, len(items)])
+        let top = min([50, len(items)])
         for bufline in range(1, top)
             for pos in highlights[bufline - 1]
                 call prop_add(bufline, pos + 1, {'length': 1, 'type': 'select_highlight', 'bufnr': s:state.result_buf.bufnr})
