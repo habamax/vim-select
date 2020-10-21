@@ -226,6 +226,7 @@ func! s:close() abort
     catch
     finally
         let s:state.job = v:null
+        let s:state.cached_items = []
         call win_gotoid(s:state.init_buf.winid)
         let &laststatus = s:state.laststatus
         let &showmode = s:state.showmode
