@@ -88,8 +88,9 @@ func! select#do(type, ...) abort
 
         let s:state.stl_progress = ''
         let s:state.init_buf = {"bufnr": bufnr(), "winid": winnr()->win_getid()}
-        let s:state.maxheight = &lines/3
-        let s:state.maxitems = get(g:, "select_max_items", 1000)
+        let s:state.max_height = &lines/3
+        let s:state.max_buffer_items = get(g:, "select_max_buffer_items", 1000)
+        let s:state.max_total_items = get(g:, "select_max_total_items", 30000)
         let s:state.result_buf = s:create_result_buf()
         let s:state.prompt_buf = s:create_prompt_buf()
         let s:state.cached_items = []
@@ -103,7 +104,10 @@ endfunc
 
 
 func! select#job_out(channel, msg) abort
-    call add(s:state.cached_items, a:msg)
+    if len(s:state.cached_items) < s:state.max_total_items
+        call add(s:state.cached_items, a:msg)
+    endif
+
     if s:state.job != v:null && job_status(s:state.job) == "run"
         call s:update_results()
     endif
@@ -214,14 +218,14 @@ endfunc
 
 func! s:close() abort
     try
-        if s:state.job != v:null
-            call job_stop(s:state.job)
-            let s:state.job = v:null
-        endif
         call win_execute(s:state.result_buf.winid, 'quit!', 1)
         call win_execute(s:state.prompt_buf.winid, 'quit!', 1)
+        if s:state.job != v:null && job_status(s:state.job) == "run"
+            call job_stop(s:state.job)
+        endif
     catch
     finally
+        let s:state.job = v:null
         call win_gotoid(s:state.init_buf.winid)
         let &laststatus = s:state.laststatus
         let &showmode = s:state.showmode
@@ -321,10 +325,10 @@ func! s:update_results() abort
     if input !~ '^\s*$'
         let [items, highlights] = matchfuzzypos(s:state.cached_items, input)
         let matched_items_cnt = len(items)
-        let items = items[0 : s:state.maxitems]
+        let items = items[0 : s:state.max_buffer_items]
     else
         let matched_items_cnt = len(s:state.cached_items)
-        let items = s:state.cached_items[0 : s:state.maxitems]
+        let items = s:state.cached_items[0 : s:state.max_buffer_items]
     endif
 
     let s:state.stl_progress = printf(" %s/%s", matched_items_cnt, len(s:state.cached_items))
@@ -341,7 +345,7 @@ func! s:update_results() abort
         endfor
     endif
 
-    call win_execute(s:state.result_buf.winid, printf('resize %d', min([len(items), s:state.maxheight])))
+    call win_execute(s:state.result_buf.winid, printf('resize %d', min([len(items), s:state.max_height])))
     call win_execute(s:state.prompt_buf.winid, 'resize 1')
 endfunc
 
@@ -367,7 +371,7 @@ endfunc
 
 
 func! s:on_next_page() abort
-    call s:on_next(s:state.maxheight - 1)
+    call s:on_next(s:state.max_height - 1)
 endfunc
 
 
@@ -398,7 +402,7 @@ endfunc
 
 
 func! s:on_prev_page() abort
-    call s:on_prev(s:state.maxheight - 1)
+    call s:on_prev(s:state.max_height - 1)
 endfunc
 
 
