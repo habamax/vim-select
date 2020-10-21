@@ -17,9 +17,9 @@ matching and select with <CR> or <Tab> if only 1 candidate is in the list.
 For files it will let you go to parent directory with <BS> and to selected
 directory with <CR>.
 
-Project wide file search uses either `ripgrep` or `fd` tool so be sure you have
-one of them installed on your system. By default it uses vim current working
-directory as a project root.
+Project wide file search uses either `fd` or `ripgrep` (with fallback to `find`
+on non-windows) tool so be sure you have one of them installed on your system.
+By default it uses vim current working directory as a project root.
 
 
 SETTINGS                                                     *select-settings*
@@ -34,7 +34,7 @@ Maximum items to be loaded into result buffer, default 1000.
 
 MAPPINGS                                                     *select-mappings*
 
-There are no default global mappings, add your own.
+There are no default global mappings -- create your own.
 
 Safe (will not create mappings if plugin was not loaded):
 
@@ -106,7 +106,8 @@ Accepts directory as an argument.
 Select project file from current working directory(and sub-directories).
 Accepts directory as an argument.
 
-NOTE: External tool `ripgrep` or `fd` is required.
+NOTE: External tool `fd` or `ripgrep` is required. On non-windows `find` would
+be used if none is installed.
 
 
 :Select project                                              *:Select_project*
