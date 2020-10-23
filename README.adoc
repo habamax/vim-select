@@ -103,7 +103,7 @@ be used if none is installed.
 +
 NOTE: External tool `ripgrep` is required.
 
-* `:Select command` from `:ex` and execute it without parameters.
+* `:Select command` from `:ex` and put it on command line.
 
 * `:Select colors` and apply it.
 

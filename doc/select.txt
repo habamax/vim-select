@@ -140,7 +140,7 @@ NOTE: External tool `ripgrep` is required.
 
 :Select command                                              *:Select_command*
 
-Select :ex command and execute it.
+Select :ex command and put it on command line.
 
 
 :Select colors                                                *:Select_colors*
