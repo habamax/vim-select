@@ -40,7 +40,7 @@ let s:select_def.colors.data = {-> s:get_colorscheme_list()}
 let s:select_def.colors.sink = "colorscheme %s"
 
 let s:select_def.command.data = {-> getcompletion('', 'command')}
-let s:select_def.command.sink = ":%s"
+let s:select_def.command.sink = {"action": {v -> feedkeys(':'..v, 'n')}}
 
 let s:select_def.project.data = {-> s:get_project_list()}
 let s:select_def.project.sink = {"action": "Select projectfile %s", "action2": "Select file %s"}
