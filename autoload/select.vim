@@ -197,7 +197,7 @@ func! s:prepare_buffer(type)
             hi def link SelectDirectoryPrefix Comment
             hi def link SelectBufferNumber Identifier
         endif
-        hi def link SelectMatched Statement
+        hi def link SelectMatched String
         try
             call prop_type_add('select_highlight', { 'highlight': 'SelectMatched', 'bufnr': bufnr() })
         catch
