@@ -32,6 +32,17 @@ Maximum items to be loaded into result buffer, default 1000.
     let g:select_max_buffer_items = 1000
 
 
+*g:select_max_total_items*
+
+Maximum items to be collected and matched against, default 30000.
+>
+    let g:select_max_total_items = 30000
+
+For example, if you `:Select projectfile ~` you will only be able to select out
+of 30000 files.
+
+
+
 MAPPINGS                                                     *select-mappings*
 
 There are no default global mappings -- create your own.
