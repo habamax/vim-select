@@ -305,12 +305,12 @@ endfunc
 
 func! s:update_results() abort
     if empty(s:state.cached_items) && type(s:select[s:state.type].data) == v:t_func
-        let s:state.cached_items = s:select[s:state.type].data()
+        let s:state.cached_items = s:select[s:state.type].data(s:state.init_buf)
     elseif s:state.job == v:null && type(s:select[s:state.type].data) == v:t_dict
         if type(s:select[s:state.type].data["cmd"]) == v:t_string
             let cmd = s:select[s:state.type].data["cmd"]
         elseif type(s:select[s:state.type].data["cmd"]) == v:t_func
-            let cmd = s:select[s:state.type].data["cmd"]()
+            let cmd = s:select[s:state.type].data["cmd"](s:state.init_buf)
         else
             return
         endif
