@@ -42,6 +42,7 @@ if exists("g:loaded_select")
     nmap <leader>m <Plug>(SelectMRU)
     nmap <leader>h <Plug>(SelectHelp)
     nmap <leader>; <Plug>(SelectCmd)
+    nmap <leader>/ <Plug>(SelectBufLine)
 endif
 ------------------------------------------------------------------------------
 
@@ -58,6 +59,7 @@ nmap <leader>b <Plug>(SelectBuffer)
 nmap <leader>m <Plug>(SelectMRU)
 nmap <leader>h <Plug>(SelectHelp)
 nmap <leader>; <Plug>(SelectCmd)
+nmap <leader>/ <Plug>(SelectBufLine)
 ------------------------------------------------------------------------------
 
 Select window has default mappings:
@@ -106,6 +108,8 @@ NOTE: External tool `ripgrep` is required.
 * `:Select command` from `:ex` and put it on command line.
 
 * `:Select colors` and apply it.
+
+* `:Select bufline` and go to it. 
 
 
 

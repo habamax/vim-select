@@ -10,6 +10,7 @@ let s:select_def.buffer = {}
 let s:select_def.colors = {}
 let s:select_def.command = {}
 let s:select_def.help = {}
+let s:select_def.bufline = {}
 
 let s:select_def.file.data = {->
             \  map(readdirex(s:state.path, {d -> d.type == 'dir'}), {k,v -> v.type == "dir" ? v.name..'/' : v.name})
@@ -47,6 +48,9 @@ let s:select_def.project.sink = {"action": "Select projectfile %s", "action2": "
 
 let s:select_def.help.data = {"cmd": {-> s:get_helptags()}}
 let s:select_def.help.sink = "help %s"
+
+let s:select_def.bufline.data = {v -> map(getbufline(v.bufnr, 1, "$"), {i, ln -> printf("%*d: %s", len(line('$', v.winid)), i+1, ln)})}
+let s:select_def.bufline.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "normal %sG"}
 
 
 "" Merge global defined select_info
@@ -192,10 +196,12 @@ func! s:prepare_buffer(type)
             syn match SelectDirectory '^.*/$'
             hi def link SelectDirectory Directory
         else
-            syn match SelectBufferNumber '^\(\s*\d\+:\)'
-            syn match SelectDirectoryPrefix '\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$'
-            hi def link SelectDirectoryPrefix Comment
-            hi def link SelectBufferNumber Identifier
+            syn match SelectPrependNumber '^\(\s*\d\+:\)'
+            hi def link SelectPrependNumber Identifier
+            if s:state.type != 'bufline'
+                syn match SelectDirectoryPrefix '\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$'
+                hi def link SelectDirectoryPrefix Comment
+            endif
         endif
         hi def link SelectMatched Statement
         try

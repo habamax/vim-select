@@ -18,3 +18,4 @@ nnoremap <silent> <Plug>(SelectMRU) :Select mru<CR>
 nnoremap <silent> <Plug>(SelectCmd) :Select command<CR>
 nnoremap <silent> <Plug>(SelectColors) :Select colors<CR>
 nnoremap <silent> <Plug>(SelectHelp) :Select help<CR>
+nnoremap <silent> <Plug>(SelectBufLine) :Select bufline<CR>

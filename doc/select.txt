@@ -59,6 +59,7 @@ Safe (will not create mappings if plugin was not loaded):
         nmap <leader>m <Plug>(SelectMRU)
         nmap <leader>h <Plug>(SelectHelp)
         nmap <leader>; <Plug>(SelectCmd)
+        nmap <leader>/ <Plug>(SelectBufLine)
     endif
 
 or regular:
@@ -70,6 +71,8 @@ or regular:
     nmap <leader>m <Plug>(SelectMRU)
     nmap <leader>h <Plug>(SelectHelp)
     nmap <leader>; <Plug>(SelectCmd)
+    nmap <leader>/ <Plug>(SelectBufLine)
+
 
 
 DEFAULT SELECT WINDOW MAPPINGS                       *select-default-mappings*
@@ -157,6 +160,11 @@ Select :ex command and put it on command line.
 :Select colors                                                *:Select_colors*
 
 Select colorscheme and apply it.
+
+
+:Select bufline                                              *:Select_bufline*
+
+Select a line in a buffer and goto it.
 
 
 
