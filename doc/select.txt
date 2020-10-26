@@ -25,11 +25,11 @@ By default it uses vim current working directory as a project root.
 SETTINGS                                                     *select-settings*
 
 
-*g:select_max_items*
+*g:select_max_buffer_items*
 
 Maximum items to be loaded into result buffer, default 1000.
 >
-    let g:select_max_items = 1000
+    let g:select_max_buffer_items = 1000
 
 
 MAPPINGS                                                     *select-mappings*
