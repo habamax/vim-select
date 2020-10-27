@@ -39,7 +39,7 @@ let s:select_def.mru.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\
 
 let s:select_def.buffer.data = {-> s:get_buffer_list()}
 let s:select_def.buffer.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "buffer %s", "action2": "sbuffer %s", "action3": "vert sbuffer %s", "action4": "tab sbuffer %s"}
-let s:select_def.buffer.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment'], "PrependNumber": ['^\(\s*\d\+:\)', 'Identifier']}
+let s:select_def.buffer.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment'], "PrependBufNr": ['^\(\s*\d\+:\)', 'Identifier']}
 
 let s:select_def.colors.data = {-> s:get_colorscheme_list()}
 let s:select_def.colors.sink = "colorscheme %s"
@@ -56,7 +56,7 @@ let s:select_def.help.sink = "help %s"
 
 let s:select_def.bufline.data = {v -> map(getbufline(v.bufnr, 1, "$"), {i, ln -> printf("%*d: %s", len(line('$', v.winid)), i+1, ln)})}
 let s:select_def.bufline.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "normal %sG"}
-let s:select_def.bufline.highlight = {"PrependNumber": ['^\(\s*\d\+:\)', 'LineNr']}
+let s:select_def.bufline.highlight = {"PrependLineNr": ['^\(\s*\d\+:\)', 'LineNr']}
 
 
 "" Merge global defined select_info
