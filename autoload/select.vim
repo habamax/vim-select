@@ -56,7 +56,7 @@ let s:select_def.help.sink = "help %s"
 
 let s:select_def.bufline.data = {v -> map(getbufline(v.bufnr, 1, "$"), {i, ln -> printf("%*d: %s", len(line('$', v.winid)), i+1, ln)})}
 let s:select_def.bufline.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "normal %sG"}
-let s:select_def.bufline.highlight = {"PrependNumber": ['^\(\s*\d\+:\)', 'Identifier']}
+let s:select_def.bufline.highlight = {"PrependNumber": ['^\(\s*\d\+:\)', 'LineNr']}
 
 
 "" Merge global defined select_info
