@@ -17,6 +17,7 @@ let s:select_def.file.data = {->
             \+ map(readdirex(s:state.path, {d -> d.type != 'dir'}), {_,v -> v.name})
             \ }
 let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
+let s:select_def.file.highlight = {"Directory": ['^.*/$', 'Directory']}
 
 if executable('fd')
     let s:select_def.projectfile.data = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
@@ -30,12 +31,15 @@ else
     let s:select_def.projectfile.data = ""
 endif
 let s:select_def.projectfile.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
+let s:select_def.projectfile.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
 
 let s:select_def.mru.data = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
 let s:select_def.mru.sink = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
+let s:select_def.mru.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
 
 let s:select_def.buffer.data = {-> s:get_buffer_list()}
 let s:select_def.buffer.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "buffer %s", "action2": "sbuffer %s", "action3": "vert sbuffer %s", "action4": "tab sbuffer %s"}
+let s:select_def.buffer.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment'], "PrependNumber": ['^\(\s*\d\+:\)', 'Identifier']}
 
 let s:select_def.colors.data = {-> s:get_colorscheme_list()}
 let s:select_def.colors.sink = "colorscheme %s"
@@ -45,12 +49,14 @@ let s:select_def.command.sink = {"action": {v -> feedkeys(':'..v, 'n')}}
 
 let s:select_def.project.data = {-> s:get_project_list()}
 let s:select_def.project.sink = {"action": "Select projectfile %s", "action2": "Select file %s"}
+let s:select_def.project.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
 
 let s:select_def.help.data = {"cmd": {-> s:get_helptags()}}
 let s:select_def.help.sink = "help %s"
 
 let s:select_def.bufline.data = {v -> map(getbufline(v.bufnr, 1, "$"), {i, ln -> printf("%*d: %s", len(line('$', v.winid)), i+1, ln)})}
 let s:select_def.bufline.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "normal %sG"}
+let s:select_def.bufline.highlight = {"PrependNumber": ['^\(\s*\d\+:\)', 'Identifier']}
 
 
 "" Merge global defined select_info
@@ -192,16 +198,11 @@ func! s:prepare_buffer(type)
         setlocal noruler
         setlocal laststatus=0
         setlocal noshowmode
-        if s:state.type == 'file'
-            syn match SelectDirectory '^.*/$'
-            hi def link SelectDirectory Directory
-        else
-            syn match SelectPrependNumber '^\(\s*\d\+:\)'
-            hi def link SelectPrependNumber Identifier
-            if s:state.type != 'bufline'
-                syn match SelectDirectoryPrefix '\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$'
-                hi def link SelectDirectoryPrefix Comment
-            endif
+        if s:select[s:state.type]->has_key("highlight")
+            for [hl_type, hl_params] in items(s:select[s:state.type].highlight)
+                exe printf("syn match Select%s '%s'", hl_type, hl_params[0])
+                exe printf("hi def link Select%s %s", hl_type, hl_params[1])
+            endfor
         endif
         hi def link SelectMatched Statement
         try
