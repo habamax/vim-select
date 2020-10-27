@@ -199,7 +199,7 @@ func! s:prepare_buffer(type)
             let prompt = '> '
         endif
         call prompt_setprompt(bufnr(), prompt)
-        hi def link SelectPrompt Title
+        hi def link SelectPrompt Identifier
         exe printf("syn match SelectPrompt '^%s'", escape(prompt, '*#%^\\'))
     elseif a:type == 'result'
         setlocal buftype=nofile
