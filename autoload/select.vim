@@ -35,7 +35,7 @@ let s:select_def.projectfile.sink = {"transform": {p, v -> fnameescape(p..v)}, "
 let s:select_def.projectfile.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
 let s:select_def.projectfile.prompt = "Project File> "
 
-let s:select_def.mru.data = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
+let s:select_def.mru.data = {-> filter(copy(v:oldfiles), {_,v -> filereadable(expand(v))})}
 let s:select_def.mru.sink = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
 let s:select_def.mru.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
 
