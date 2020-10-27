@@ -18,6 +18,7 @@ let s:select_def.file.data = {->
             \ }
 let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
 let s:select_def.file.highlight = {"Directory": ['^.*/$', 'Directory']}
+let s:select_def.file.prompt = "File> "
 
 if executable('fd')
     let s:select_def.projectfile.data = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
@@ -32,6 +33,7 @@ else
 endif
 let s:select_def.projectfile.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
 let s:select_def.projectfile.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
+let s:select_def.projectfile.prompt = "Project File> "
 
 let s:select_def.mru.data = {-> filter(copy(v:oldfiles), {_,v -> v !~ 'Local[/\\]Temp[/\\].*tmp$' && v !~ '/tmp/.*'})}
 let s:select_def.mru.sink = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
@@ -190,6 +192,15 @@ func! s:prepare_buffer(type)
         setlocal buftype=prompt
         set filetype=selectprompt
         setlocal nocursorline
+
+        if s:select[s:state.type]->has_key("prompt")
+            let prompt = s:select[s:state.type].prompt
+        else
+            let prompt = '> '
+        endif
+        call prompt_setprompt(bufnr(), prompt)
+        hi def link SelectPrompt Title
+        exe printf("syn match SelectPrompt '^%s'", escape(prompt, '*#%^\\'))
     elseif a:type == 'result'
         setlocal buftype=nofile
         set filetype=selectresults
