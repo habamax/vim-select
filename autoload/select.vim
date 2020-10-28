@@ -301,6 +301,8 @@ func! s:on_select(...) abort
     " run the action
     if s:func_exists("sink", action)
         call s:func("sink", action, current_res)
+    elseif type(s:select[s:state.type]["sink"]) == v:t_string
+        exe printf(s:select[s:state.type]["sink"], current_res)
     else
         exe printf(s:select[s:state.type]["sink"][action], current_res)
     endif
