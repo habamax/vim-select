@@ -16,7 +16,7 @@ let s:select_def.file.data = {->
             \  map(readdirex(s:state.path, {d -> d.type == 'dir'}), {k,v -> v.type == "dir" ? v.name..'/' : v.name})
             \+ map(readdirex(s:state.path, {d -> d.type != 'dir'}), {_,v -> v.name})
             \ }
-let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
+let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "special": {p, v -> s:special_visit_directory(p, v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
 let s:select_def.file.highlight = {"Directory": ['^.*/$', 'Directory']}
 let s:select_def.file.prompt = "File> "
 
@@ -31,7 +31,7 @@ elseif !has("win32")
 else
     let s:select_def.projectfile.data = ""
 endif
-let s:select_def.projectfile.sink = {"transform": {p, v -> fnameescape(p..v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
+let s:select_def.projectfile.sink = {"transform": {p, v -> fnameescape(p..v)}, "special": {p, v -> s:special_save_project(p, v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
 let s:select_def.projectfile.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
 let s:select_def.projectfile.prompt = "Project File> "
 
@@ -268,20 +268,13 @@ func! s:on_select(...) abort
         return
     endif
 
-    " file is a special case to be able to go down/up directory structure
-    if s:state.type == 'file' && current_res =~ '/$'
-        let s:state.path ..= current_res
-        call setbufline(s:state.prompt_buf.bufnr, '$', '')
-        let s:state.cached_items = []
-        call s:update_results()
-        startinsert!
-        return
-    endif
-
-    " projectfile is a special case to persist project once file was selected
-    if s:state.type == 'projectfile'
-        call s:add_project(s:state.path)
-        call s:save_project_list()
+    " handle special cases (E.g. Select file on a directory should visit it
+    " instead of opening
+    if s:select[s:state.type].sink->has_key("special") && type(s:select[s:state.type].sink["special"]) == v:t_func
+        if s:select[s:state.type].sink["special"](expand(s:state.path), current_res)
+            startinsert!
+            return
+        endif
     endif
 
     let cmd = {}
@@ -566,4 +559,33 @@ endfunc
 func! s:get_helptags() abort
     let l:help = split(globpath(&runtimepath, 'doc/tags', 1), '\n')
     return 'rg ^[^[:space:]]+ -No --no-heading --no-filename '..join(map(l:help, {_,v -> fnameescape(v)}))
+endfunc
+
+
+" Handle special case for Select file.
+" When you Select file which is a directory it should visit it instead of opening.
+" If result is true --> Select window should not be closed
+func! s:special_visit_directory(path, directory)
+    if !isdirectory(a:path..a:directory)
+        return v:false
+    endif
+
+    let s:state.path = a:path..a:directory
+    call setbufline(s:state.prompt_buf.bufnr, '$', '')
+    let s:state.cached_items = []
+    call s:update_results()
+    return v:true
+endfunc
+
+
+
+" Handle special case for Select projectfile.
+" When you a file in Select projectfile, current working directory should be
+" saved in .selectprojects
+" Always return false (closes Select window)
+func! s:special_save_project(path, directory)
+    echom a:path
+    call s:add_project(a:path)
+    call s:save_project_list()
+    return v:false
 endfunc
