@@ -52,7 +52,7 @@ Safe (will not create mappings if plugin was not loaded):
 >
     " add it to ~/.vim/after/plugin/select.vim
     if exists("g:loaded_select")
-        nmap <leader>fo <Plug>(SelectFile)
+        nmap <leader>fe <Plug>(SelectFile)
         nmap <leader>ff <Plug>(SelectProjectFile)
         nmap <leader>fp <Plug>(SelectProject)
         nmap <leader>b <Plug>(SelectBuffer)
@@ -64,7 +64,7 @@ Safe (will not create mappings if plugin was not loaded):
 
 or regular:
 >
-    nmap <leader>fo <Plug>(SelectFile)
+    nmap <leader>fe <Plug>(SelectFile)
     nmap <leader>ff <Plug>(SelectProjectFile)
     nmap <leader>fp <Plug>(SelectProject)
     nmap <leader>b <Plug>(SelectBuffer)
@@ -86,6 +86,9 @@ DEFAULT SELECT WINDOW MAPPINGS                       *select-default-mappings*
 <C-v> to open current item in vertical split.                   *select_<C-v>*
 
 <C-t> to open current item in a tab.                            *select_<C-v>*
+
+<C-j> to create a new file out of prompt value.                 *select_<C-j>*
+Only available for |:Select_file|.
 
                                                                 *select-<TAB>*
 <TAB> select next item in the list, for a single item it will open/execute it.

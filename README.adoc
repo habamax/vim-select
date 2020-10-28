@@ -35,7 +35,7 @@ There are no default global mappings -- create your own.
 ------------------------------------------------------------------------------
 " add it to ~/.vim/after/plugin/select.vim
 if exists("g:loaded_select")
-    nmap <leader>fo <Plug>(SelectFile)
+    nmap <leader>fe <Plug>(SelectFile)
     nmap <leader>ff <Plug>(SelectProjectFile)
     nmap <leader>fp <Plug>(SelectProject)
     nmap <leader>b <Plug>(SelectBuffer)
@@ -52,7 +52,7 @@ or
 [source,vim]
 ------------------------------------------------------------------------------
 " add it to your vimrc
-nmap <leader>fo <Plug>(SelectFile)
+nmap <leader>fe <Plug>(SelectFile)
 nmap <leader>ff <Plug>(SelectProjectFile)
 nmap <leader>fp <Plug>(SelectProject)
 nmap <leader>b <Plug>(SelectBuffer)
@@ -68,6 +68,7 @@ Select window has default mappings:
 * `<S-CR>` or `<C-s>` to open current item in split.
 * `<C-v>` to open current item in vertical split.
 * `<C-t>` to open current item in a tab.
+* `<C-j>` to create a new file out of prompt value. Only available for `:Select file`.
 * `<ESC>` to close the select window.
 * `<TAB>` select next item in the list, for a single item it will open/execute
   it.

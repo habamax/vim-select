@@ -16,7 +16,7 @@ let s:select_def.file.data = {->
             \  map(readdirex(s:state.path, {d -> d.type == 'dir'}), {k,v -> v.type == "dir" ? v.name..'/' : v.name})
             \+ map(readdirex(s:state.path, {d -> d.type != 'dir'}), {_,v -> v.name})
             \ }
-let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "empty": {v -> v}, "special": {p, v -> s:special_visit_directory(p, v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
+let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "empty": {v -> v}, "special": {p, v -> s:special_visit_directory(p, v)}, "action_new": "edit %s", "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
 let s:select_def.file.highlight = {"Directory": ['^.*/$', 'Directory']}
 let s:select_def.file.prompt = "File> "
 
@@ -261,7 +261,11 @@ endfunc
 
 
 func! s:on_select(...) abort
-    let current_res = s:get_current_result()
+    if a:0 && a:1 == 'action_new'
+        let current_res = s:get_prompt_value()
+    else
+        let current_res = s:get_current_result()
+    endif
 
     " handle "empty" sink
     " E.g. for Select file it would create a new file from the prompt value.
@@ -456,6 +460,7 @@ func! s:add_prompt_mappings() abort
     inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action2')<CR>
     inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('action3')<CR>
     inoremap <silent><buffer> <C-T> <ESC>:call <SID>on_select('action4')<CR>
+    inoremap <silent><buffer> <C-j> <ESC>:call <SID>on_select('action_new')<CR>
     inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
     inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
     inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
