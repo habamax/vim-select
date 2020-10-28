@@ -271,7 +271,7 @@ func! s:on_select(...) abort
     " handle special cases (E.g. Select file on a directory should visit it
     " instead of opening
     if s:select[s:state.type].sink->has_key("special") && type(s:select[s:state.type].sink["special"]) == v:t_func
-        if s:select[s:state.type].sink["special"](expand(s:state.path), current_res)
+        if s:select[s:state.type].sink["special"](s:state.path, current_res)
             startinsert!
             return
         endif
@@ -584,7 +584,6 @@ endfunc
 " saved in .selectprojects
 " Always return false (closes Select window)
 func! s:special_save_project(path, directory)
-    echom a:path
     call s:add_project(a:path)
     call s:save_project_list()
     return v:false
