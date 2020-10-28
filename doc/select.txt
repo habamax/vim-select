@@ -107,12 +107,14 @@ COMMANDS                                                     *select-commands*
 :Select                                                              *:Select*
 
 Select file from current file directory.
+If there are no results, a new file would be created.
 
 
 :Select file <dir>                                              *:Select_file*
 
 Select file from current file directory.
 Accepts directory as an argument.
+If there are no results, a new file would be created.
 
 
 :Select projectfile <dir>                                *:Select_projectfile*
