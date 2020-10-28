@@ -16,7 +16,7 @@ let s:select_def.file.data = {->
             \  map(readdirex(s:state.path, {d -> d.type == 'dir'}), {k,v -> v.type == "dir" ? v.name..'/' : v.name})
             \+ map(readdirex(s:state.path, {d -> d.type != 'dir'}), {_,v -> v.name})
             \ }
-let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "special": {p, v -> s:special_visit_directory(p, v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
+let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "empty": {v -> v}, "special": {p, v -> s:special_visit_directory(p, v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
 let s:select_def.file.highlight = {"Directory": ['^.*/$', 'Directory']}
 let s:select_def.file.prompt = "File> "
 
@@ -263,9 +263,15 @@ endfunc
 func! s:on_select(...) abort
     let current_res = s:get_current_result()
 
-    if empty(current_res)
-        startinsert!
-        return
+    " handle "empty" sink
+    " E.g. for Select file it would create a new file from the prompt value.
+    if empty(current_res) 
+        if s:func_exists("sink", "empty")
+            let current_res = s:func("sink", "empty", s:get_prompt_value())
+        else
+            startinsert!
+            return
+        endif
     endif
 
     " handle special cases (E.g. Select file on a directory should visit it
