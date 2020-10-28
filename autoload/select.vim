@@ -270,47 +270,41 @@ func! s:on_select(...) abort
 
     " handle special cases (E.g. Select file on a directory should visit it
     " instead of opening
-    if s:select[s:state.type].sink->has_key("special") && type(s:select[s:state.type].sink["special"]) == v:t_func
-        if s:select[s:state.type].sink["special"](s:state.path, current_res)
+    if s:func_exists("sink", "special")
+        if s:func("sink", "special", s:state.path, current_res)
             startinsert!
             return
         endif
     endif
 
-    let cmd = {}
-    if type(s:select[s:state.type].sink) == v:t_string
-        " do nothing if action was specified and sink is a string
-        if a:0 == 1
-            startinsert!
-            return
-        else
-            let cmd.s = s:select[s:state.type].sink
-        endif
-    elseif type(s:select[s:state.type].sink) == v:t_dict
-        " do nothing if action was specified and sink is a dict without
-        " a corresponding action key
-        if a:0 == 1
-            if !s:select[s:state.type].sink->has_key(a:1)
-                startinsert!
-                return
-            else
-                let cmd.s = s:select[s:state.type].sink[a:1]
-            endif
-        else
-            let cmd.s = s:select[s:state.type].sink['action']
-        endif
-        if s:select[s:state.type].sink->has_key("transform")
-            let current_res = s:select[s:state.type].sink["transform"](s:state.path, current_res)
-        endif
+    " apply transform
+    if s:func_exists("sink", "transform")
+        let current_res = s:func("sink", "transform", s:state.path, current_res)
+    endif
+
+    " do nothing if action was specified and 
+    " sink is either a string or sink is a dict without action provided
+    if a:0 == 1 && !s:action_exists(a:1)
+        startinsert!
+        return
     endif
 
     call s:close()
 
-    if type(cmd.s) == v:t_string
-        exe printf(cmd.s, current_res)
-    elseif type(cmd.s) == v:t_func
-        call cmd.s(current_res)
+    " set default action
+    if a:0 == 0
+        let action = 'action'
+    else
+        let action = a:1
     endif
+
+    " run the action
+    if s:func_exists("sink", action)
+        call s:func("sink", action, current_res)
+    else
+        exe printf(s:select[s:state.type]["sink"][action], current_res)
+    endif
+
 endfunc
 
 
@@ -474,6 +468,7 @@ func! s:add_prompt_autocommands() abort
 endfunc
 
 
+"" Normalize path separators
 func s:normalize_path(path) abort
     return substitute(a:path, '\\\+', '/', 'g')
 endfunc
@@ -533,6 +528,7 @@ func! s:get_project_list() abort
 endfunc
 
 
+"" Save/persist project list
 func! s:save_project_list() abort
     if !s:state->has_key("projects") || len(s:state["projects"]) == 0
         return
@@ -545,6 +541,7 @@ func! s:save_project_list() abort
 endfunc
 
 
+"" Add project to the current project list
 func! s:add_project(project) abort
     if !s:state->has_key("projects")
         let s:state["projects"] = s:get_project_list()
@@ -554,17 +551,17 @@ func! s:add_project(project) abort
 endfunc
 
 
-" List of all help tags/topics.
-" Uses ripgrep.
+"" List of all help tags/topics.
+"" Uses ripgrep.
 func! s:get_helptags() abort
     let l:help = split(globpath(&runtimepath, 'doc/tags', 1), '\n')
     return 'rg ^[^[:space:]]+ -No --no-heading --no-filename '..join(map(l:help, {_,v -> fnameescape(v)}))
 endfunc
 
 
-" Handle special case for Select file.
-" When you Select file which is a directory it should visit it instead of opening.
-" If result is true --> Select window should not be closed
+"" Handle special case for Select file.
+"" When you Select file which is a directory it should visit it instead of opening.
+"" If result is true --> Select window should not be closed
 func! s:special_visit_directory(path, directory)
     if !isdirectory(a:path..a:directory)
         return v:false
@@ -579,12 +576,34 @@ endfunc
 
 
 
-" Handle special case for Select projectfile.
-" When you a file in Select projectfile, current working directory should be
-" saved in .selectprojects
-" Always return false (closes Select window)
+"" Handle special case for Select projectfile.
+"" When you a file in Select projectfile, current working directory should be
+"" saved in .selectprojects
+"" Always return false (closes Select window)
 func! s:special_save_project(path, directory)
     call s:add_project(a:path)
     call s:save_project_list()
     return v:false
+endfunc
+
+
+"" Check if lambda func exists for the given type and name
+func! s:func_exists(type, name)
+    return type(s:select[s:state.type][a:type]) == v:t_dict
+                \ && s:select[s:state.type][a:type]->has_key(a:name)
+                \ && type(s:select[s:state.type][a:type][a:name]) == v:t_func
+endfunc
+
+
+"" Call lambda function for a given type and name
+func! s:func(type, name, ...)
+    return call(s:select[s:state.type][a:type][a:name], a:000)
+endfunc
+
+
+"" Check if the action exists for the current Select type.
+func! s:action_exists(action)
+    let result = type(s:select[s:state.type]["sink"]) == v:t_dict
+    let result = result && s:select[s:state.type]["sink"]->has_key(a:action)
+    return result
 endfunc
