@@ -163,7 +163,7 @@ let g:select_info.test.sink = {"action": {v -> ShowMessage(v)}}
 ------------------------------------------------------------------------------
 let g:select_info.highlight = {}
 let g:select_info.highlight.data = {-> getcompletion('', 'highlight')}
-let g:select_info.highlight.sink = "hi %s"
+let g:select_info.highlight.sink = {"action": {v -> feedkeys(':hi '..v.."\<CR>", "nt")}}
 ------------------------------------------------------------------------------
 
 Then use `:Select highlight` to select and show syntax highlight group
