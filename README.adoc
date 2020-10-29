@@ -1,4 +1,5 @@
 = vim-select: fuzzy select file/buffer/MRU/etc
+:toc:
 
 Plugin works with recent (nightly) vim having `matchfuzzypos()` function and
 `prompt-buffer` feature implemented.
