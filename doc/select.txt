@@ -25,6 +25,13 @@ By default it uses vim current working directory as a project root.
 SETTINGS                                                     *select-settings*
 
 
+*g:select_max_height*
+
+Maximum height of results window, default is |'lines'| / 4.
+>
+    let g:select_max_height = 10
+
+
 *g:select_max_buffer_items*
 
 Maximum items to be loaded into result buffer, default 1000.

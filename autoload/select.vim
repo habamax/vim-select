@@ -100,7 +100,7 @@ func! select#do(type, ...) abort
 
         let s:state.stl_progress = ''
         let s:state.init_buf = {"bufnr": bufnr(), "winid": winnr()->win_getid()}
-        let s:state.max_height = &lines/3
+        let s:state.max_height = get(g:, "select_max_height", &lines/4)
         let s:state.max_buffer_items = get(g:, "select_max_buffer_items", 1000)
         let s:state.max_total_items = get(g:, "select_max_total_items", 30000)
         let s:state.result_buf = s:create_result_buf()
