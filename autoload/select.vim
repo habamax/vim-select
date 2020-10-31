@@ -269,7 +269,7 @@ func! s:on_select(...) abort
 
     " handle "empty" sink
     " E.g. for Select file it would create a new file from the prompt value.
-    if empty(current_res) 
+    if empty(current_res)
         if s:func_exists("sink", "empty")
             let current_res = s:func("sink", "empty", s:get_prompt_value())
         else
@@ -316,7 +316,6 @@ func! s:on_select(...) abort
     else
         exe printf(s:select[s:state.type]["sink"][action], current_res)
     endif
-
 endfunc
 
 
