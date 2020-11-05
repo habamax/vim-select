@@ -461,6 +461,7 @@ func! s:add_prompt_mappings() abort
     inoremap <silent><buffer> <C-T> <ESC>:call <SID>on_select('action4')<CR>
     inoremap <silent><buffer> <C-j> <ESC>:call <SID>on_select('action_new')<CR>
     inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
+    inoremap <silent><buffer> <C-c> <ESC>:call <SID>on_cancel()<CR>
     inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
     inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
     inoremap <silent><buffer> <BS> <ESC>:call <SID>on_backspace()<CR>
@@ -476,6 +477,7 @@ endfunc
 func! s:add_prompt_autocommands() abort
     augroup prompt | au!
         au TextChangedI <buffer> call s:update_results()
+        au BufLeave <buffer> call <sid>close()
     augroup END
 endfunc
 
