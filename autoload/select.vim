@@ -187,8 +187,8 @@ func! s:prepare_buffer(type)
         let bufnr = bufnr(tempname(), 1)
     endif
     exe "silent noautocmd botright sbuffer "..bufnr
-    resize 1
     if a:type == "prompt"
+        resize 1
         setlocal buftype=prompt
         set filetype=selectprompt
         setlocal nocursorline
@@ -202,6 +202,7 @@ func! s:prepare_buffer(type)
         hi def link SelectPrompt Identifier
         exe printf("syn match SelectPrompt '^%s'", escape(prompt, '*#%^\\'))
     elseif a:type == 'result'
+        exe printf('resize %d', s:state.max_height)
         setlocal buftype=nofile
         set filetype=selectresults
         setlocal statusline=%#Statusline#%{select#statusline_type()}%=%#StatuslineNC#%{select#statusline_progress()}
@@ -372,9 +373,6 @@ func! s:update_results() abort
             endfor
         endfor
     endif
-
-    call win_execute(s:state.result_buf.winid, printf('resize %d', min([len(items), s:state.max_height])))
-    call win_execute(s:state.prompt_buf.winid, 'resize 1')
 endfunc
 
 
