@@ -109,7 +109,7 @@ func! select#do(type, ...) abort
         let s:state.job = v:null
         startinsert!
     catch /.*/
-        echom v:exception
+        echomsg v:exception
         call s:close()
     endtry
 endfunc
