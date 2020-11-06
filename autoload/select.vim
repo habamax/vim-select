@@ -502,7 +502,7 @@ endfunc
 
 
 "" Normalize path separators
-func s:normalize_path(path) abort
+func! s:normalize_path(path) abort
     return substitute(a:path, '\\\+', '/', 'g')
 endfunc
 
@@ -511,16 +511,16 @@ endfunc
 func! s:shorten_bufname(bname)
     let cwd = s:normalize_path(getcwd()..'/')
     let bname = s:normalize_path(a:bname)
-    if strchars(cwd) > strchars(bname)
-        return bname
-    endif
-    let res = ''
-    for c in range(strchars(bname))
-        if c > strchars(cwd) || bname->strcharpart(c, 1) != cwd->strcharpart(c, 1)
-            let res .= bname->strcharpart(c, 1)
+    let idx = 0
+    let min_len = min([strchars(bname), strchars(cwd)])
+    while idx < min_len
+        echom bname->strcharpart(idx, 1) cwd->strcharpart(idx, 1)
+        if bname->strcharpart(idx, 1) != cwd->strcharpart(idx, 1)
+            break
         endif
-    endfor
-    return res
+        let idx += 1
+    endwhile
+    return bname->strcharpart(idx)
 endfunc
 
 
