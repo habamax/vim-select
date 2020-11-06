@@ -106,7 +106,10 @@ func! select#do(type, ...) abort
         let s:state.result_buf = s:create_result_buf()
         let s:state.prompt_buf = s:create_prompt_buf()
         let s:state.cached_items = []
-        let s:state.job = v:null
+        let s:state.job_started = v:false
+        if s:state->has_key("job")
+            unlet s:state.job
+        endif
         startinsert!
     catch /.*/
         echomsg v:exception
@@ -118,20 +121,19 @@ endfunc
 func! select#job_out(channel, msg) abort
     if len(s:state.cached_items) < s:state.max_total_items
         call add(s:state.cached_items, a:msg)
-    else
+    elseif s:state->has_key("job")
         call job_stop(s:state.job)
+        unlet s:state.job
     endif
 
-    if s:state.job != v:null && job_status(s:state.job) == "run"
+    if s:state->has_key("job") && job_status(s:state.job) == "run"
         call s:update_results()
     endif
 endfunc
 
 
 func! select#job_close(channel) abort
-    if s:state.job != v:null
-        call s:update_results()
-    endif
+    call s:update_results()
 endfunc
 
 
@@ -251,12 +253,14 @@ func! s:close() abort
         call win_gotoid(s:state.init_buf.winid)
         call win_execute(s:state.result_buf.winid, 'quit!', 1)
         call win_execute(s:state.prompt_buf.winid, 'quit!', 1)
-        if s:state.job != v:null && job_status(s:state.job) == "run"
+        if job_status(s:state.job) == "run"
             call job_stop(s:state.job)
         endif
     catch
     finally
-        let s:state.job = v:null
+        if s:state->has_key('job')
+            unlet s:state.job
+        endif
         let s:state.cached_items = []
         let &laststatus = s:state.laststatus
         let &showmode = s:state.showmode
@@ -330,9 +334,12 @@ endfunc
 
 
 func! s:update_results() abort
+    if winbufnr(s:state.result_buf.bufnr) == -1
+        return
+    endif
     if empty(s:state.cached_items) && type(s:select[s:state.type].data) == v:t_func
         let s:state.cached_items = s:select[s:state.type].data(s:state.init_buf)
-    elseif s:state.job == v:null && type(s:select[s:state.type].data) == v:t_dict
+    elseif !s:state.job_started && !s:state->has_key('job') && type(s:select[s:state.type].data) == v:t_dict
         if type(s:select[s:state.type].data["cmd"]) == v:t_string
             let cmd = s:select[s:state.type].data["cmd"]
         elseif type(s:select[s:state.type].data["cmd"]) == v:t_func
@@ -340,10 +347,14 @@ func! s:update_results() abort
         else
             return
         endif
+
         let s:state.job = job_start(cmd, {
                     \ "out_cb": "select#job_out",
                     \ "close_cb": "select#job_close",
                     \ "cwd": s:state.path})
+        if job_status(s:state.job) != 'fail'
+            let s:state.job_started = v:true
+        endif
     endif
 
     let items = []
@@ -361,6 +372,7 @@ func! s:update_results() abort
     endif
 
     let s:state.stl_progress = printf(" %s/%s", matched_items_cnt, len(s:state.cached_items))
+    call win_execute(s:state.result_buf.winid, 'redrawstatus')
 
     call setbufline(s:state.result_buf.bufnr, 1, items)
     silent call deletebufline(s:state.result_buf.bufnr, len(items) + 1, "$")
