@@ -41,12 +41,12 @@ Maximum items to be loaded into result buffer, default 1000.
 
 *g:select_max_total_items*
 
-Maximum items to be collected and matched against, default 30000.
+Maximum items to be collected and matched against, default 50000.
 >
-    let g:select_max_total_items = 30000
+    let g:select_max_total_items = 50000
 
 For example, if you `:Select projectfile ~` you will only be able to select out
-of 30000 files.
+of 50000 files.
 
 
 
