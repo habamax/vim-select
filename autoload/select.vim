@@ -247,6 +247,7 @@ endfunc
 
 func! s:close() abort
     try
+        call win_gotoid(s:state.init_buf.winid)
         call win_execute(s:state.result_buf.winid, 'quit!', 1)
         call win_execute(s:state.prompt_buf.winid, 'quit!', 1)
         if s:state.job != v:null && job_status(s:state.job) == "run"
@@ -256,7 +257,6 @@ func! s:close() abort
     finally
         let s:state.job = v:null
         let s:state.cached_items = []
-        call win_gotoid(s:state.init_buf.winid)
         let &laststatus = s:state.laststatus
         let &showmode = s:state.showmode
         let &ruler = s:state.ruler
