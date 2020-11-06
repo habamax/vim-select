@@ -507,22 +507,6 @@ func! s:normalize_path(path) abort
 endfunc
 
 
-"" Naive but looks like it works
-func! s:shorten_bufname(bname)
-    let cwd = s:normalize_path(getcwd()..'/')
-    let bname = s:normalize_path(a:bname)
-    let idx = 0
-    let min_len = min([strchars(bname), strchars(cwd)])
-    while idx < min_len
-        if bname->strcharpart(idx, 1) != cwd->strcharpart(idx, 1)
-            break
-        endif
-        let idx += 1
-    endwhile
-    return bname->strcharpart(idx)
-endfunc
-
-
 "" Buffer list is sorted by lastused time + 2 most recently used buffers
 "" are exchanged/switched:
 "" * second lastused is the first in the list
@@ -531,7 +515,7 @@ endfunc
 func! s:get_buffer_list() abort
     let l:Sort = {a, b -> a.lastused == b.lastused ? 0 : a.lastused > b.lastused ? -1 : 1}
     let buflist = sort(getbufinfo({'buflisted': 1}), l:Sort)
-    return map(buflist[1:1] + buflist[0:0] + buflist[2:], {k, v -> printf("%3d: %s", v.bufnr, (empty(v.name) ? "[No Name]" : s:shorten_bufname(v.name)))})
+    return map(buflist[1:1] + buflist[0:0] + buflist[2:], {k, v -> printf("%3d: %s", v.bufnr, (empty(v.name) ? "[No Name]" : s:normalize_path(fnamemodify(v.name, ":p:."))))})
 endfunc
 
 
