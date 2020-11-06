@@ -514,7 +514,6 @@ func! s:shorten_bufname(bname)
     let idx = 0
     let min_len = min([strchars(bname), strchars(cwd)])
     while idx < min_len
-        echom bname->strcharpart(idx, 1) cwd->strcharpart(idx, 1)
         if bname->strcharpart(idx, 1) != cwd->strcharpart(idx, 1)
             break
         endif
