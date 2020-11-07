@@ -110,6 +110,7 @@ func! select#do(type, ...) abort
         if s:state->has_key("job")
             unlet s:state.job
         endif
+        call s:update_results()
         startinsert!
     catch /.*/
         echomsg v:exception
