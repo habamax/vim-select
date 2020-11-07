@@ -468,7 +468,12 @@ endfunc
 
 
 func! s:get_prompt_value() abort
-    return strcharpart(s:state.prompt_buf.bufnr->getbufline('$')[0], strchars(s:state.prompt_buf.bufnr->prompt_getprompt()))
+    if bufwinnr(s:state.prompt_buf.bufnr) != -1
+        let result = strcharpart(s:state.prompt_buf.bufnr->getbufline('$')[0], strchars(s:state.prompt_buf.bufnr->prompt_getprompt()))
+    else
+        let result = ''
+    endif
+    return result
 endfunc
 
 
