@@ -521,7 +521,7 @@ endfunc
 func! s:get_buffer_list() abort
     let l:Sort = {a, b -> a.lastused == b.lastused ? 0 : a.lastused > b.lastused ? -1 : 1}
     let buflist = sort(getbufinfo({'buflisted': 1}), l:Sort)
-    return map(buflist[1:1] + buflist[0:0] + buflist[2:], {k, v -> printf("%3d: %s", v.bufnr, (empty(v.name) ? "[No Name]" : s:normalize_path(fnamemodify(v.name, ":p:."))))})
+    return map(buflist[1:1] + buflist[0:0] + buflist[2:], {k, v -> printf("%3d: %s", v.bufnr, (empty(v.name) ? "[No Name]" : v.variables->has_key("netrw_browser_active") ? s:normalize_path(v.name)..'/' : s:normalize_path(fnamemodify(v.name, ":p:."))))})
 endfunc
 
 
