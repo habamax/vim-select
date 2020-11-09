@@ -201,7 +201,7 @@ func! s:prepare_buffer(type)
         else
             let prompt = '> '
         endif
-        call prompt_setprompt(bufnr(), prompt)
+        call prompt_setprompt(bufnr, prompt)
         hi def link SelectPrompt PreProc
         exe printf("syn match SelectPrompt '^%s'", escape(prompt, '*#%^\\'))
     elseif a:type == 'result'
@@ -230,7 +230,7 @@ func! s:prepare_buffer(type)
         endif
         hi def link SelectMatched Statement
         try
-            call prop_type_add('select_highlight', { 'highlight': 'SelectMatched', 'bufnr': bufnr() })
+            call prop_type_add('select_highlight', { 'highlight': 'SelectMatched', 'bufnr': bufnr })
         catch
         endtry
     endif
