@@ -339,23 +339,29 @@ func! s:update_results() abort
     if winbufnr(s:state.result_buf.bufnr) == -1
         return
     endif
-    if empty(s:state.cached_items) && type(s:select[s:state.type].data) == v:t_func
-        let s:state.cached_items = s:select[s:state.type].data(s:state.init_buf)
-    elseif !s:state.job_started && !s:state->has_key('job') && type(s:select[s:state.type].data) == v:t_dict
-        if type(s:select[s:state.type].data["cmd"]) == v:t_string
-            let cmd = s:select[s:state.type].data["cmd"]
-        elseif type(s:select[s:state.type].data["cmd"]) == v:t_func
-            let cmd = s:select[s:state.type].data["cmd"](s:state.init_buf)
-        else
-            return
-        endif
 
-        let s:state.job = job_start(cmd, {
-                    \ "out_cb": "select#job_out",
-                    \ "close_cb": "select#job_close",
-                    \ "cwd": s:state.path})
-        if job_status(s:state.job) != 'fail'
-            let s:state.job_started = v:true
+
+    if empty(s:state.cached_items)
+        if type(s:select[s:state.type].data) == v:t_func
+            let s:state.cached_items = s:select[s:state.type].data(s:state.init_buf)
+        elseif !s:state.job_started && !s:state->has_key('job') && type(s:select[s:state.type].data) == v:t_dict
+            if type(s:select[s:state.type].data["cmd"]) == v:t_string
+                let cmd = s:select[s:state.type].data["cmd"]
+            elseif type(s:select[s:state.type].data["cmd"]) == v:t_func
+                let cmd = s:select[s:state.type].data["cmd"](s:state.init_buf)
+            else
+                return
+            endif
+
+            let s:state.job = job_start(cmd, {
+                        \ "out_cb": "select#job_out",
+                        \ "close_cb": "select#job_close",
+                        \ "cwd": s:state.path})
+
+
+            if job_status(s:state.job) != 'fail'
+                let s:state.job_started = v:true
+            endif
         endif
     endif
 
