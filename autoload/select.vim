@@ -169,17 +169,17 @@ endfunc
 
 
 func! s:create_prompt_buf() abort
-    call s:prepare_buffer('prompt')
+    let bufnr = s:prepare_buffer('prompt')
     call s:add_prompt_mappings()
     call s:add_prompt_autocommands()
 
-    return {"bufnr": bufnr(), "winid": winnr()->win_getid()}
+    return {"bufnr": bufnr, "winid": bufnr->bufwinid()}
 endfunc
 
 
 func! s:create_result_buf() abort
-    call s:prepare_buffer('result')
-    return {"bufnr": bufnr(), "winid": winnr()->win_getid()}
+    let bufnr = s:prepare_buffer('result')
+    return {"bufnr": bufnr, "winid": bufnr->bufwinid()}
 endfunc
 
 
@@ -246,6 +246,7 @@ func! s:prepare_buffer(type)
     setlocal tw=0
     setlocal winfixheight
     abc <buffer>
+    return bufnr
 endfunc
 
 
