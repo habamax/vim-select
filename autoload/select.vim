@@ -85,6 +85,7 @@ func! select#do(type, ...) abort
     else
         let s:state.type = 'file'
     endif
+
     try
         let s:state.laststatus = &laststatus
         let s:state.showmode = &showmode
