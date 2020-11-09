@@ -13,8 +13,8 @@ let s:select_def.help = {}
 let s:select_def.bufline = {}
 
 let s:select_def.file.data = {->
-            \  map(readdirex(s:state.path, {d -> d.type == 'dir'}), {k,v -> v.type == "dir" ? v.name..'/' : v.name})
-            \+ map(readdirex(s:state.path, {d -> d.type != 'dir'}), {_,v -> v.name})
+            \  map(readdirex(s:state.path, {d -> d.type =~ '\%(dir\|linkd\)$'}), {_, v -> v.name..'/'})
+            \+ map(readdirex(s:state.path, {d -> d.type =~ '\%(file\|link\)$'}), {_, v -> v.name})
             \ }
 let s:select_def.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "empty": {v -> v}, "special": {p, v -> s:special_visit_directory(p, v)}, "action_new": "edit %s", "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
 let s:select_def.file.highlight = {"Directory": ['^.*/$', 'Directory']}
