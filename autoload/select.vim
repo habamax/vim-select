@@ -202,7 +202,7 @@ func! s:prepare_buffer(type)
             let prompt = '> '
         endif
         call prompt_setprompt(bufnr(), prompt)
-        hi def link SelectPrompt Identifier
+        hi def link SelectPrompt PreProc
         exe printf("syn match SelectPrompt '^%s'", escape(prompt, '*#%^\\'))
     elseif a:type == 'result'
         exe printf('resize %d', s:state.max_height)
