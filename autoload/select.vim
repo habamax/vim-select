@@ -337,7 +337,7 @@ endfunc
 
 
 func! s:update_results() abort
-    if winbufnr(s:state.result_buf.bufnr) == -1
+    if bufwinnr(s:state.result_buf.bufnr) == -1
         return
     endif
 
