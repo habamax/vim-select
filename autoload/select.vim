@@ -91,7 +91,7 @@ func! select#do(type, ...) abort
         let s:state.ruler = &ruler
 
         if a:0 == 1 && !empty(a:1)
-            let s:state.path = s:normalize_path(fnamemodify(a:1, ":p"))
+            let s:state.path = s:normalize_path(fnamemodify(expand(a:1), ":p"))
         elseif a:type == 'file'
             let s:state.path = s:normalize_path(expand("%:p:h")..'/')
         else
