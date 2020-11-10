@@ -118,8 +118,11 @@ func! s:update_results() abort
     if !empty(highlights)
         let top = min([50, len(items)])
         for bufline in range(1, top)
+            let item = items[bufline - 1]
             for pos in highlights[bufline - 1]
-                call prop_add(bufline, pos + 1, {'length': 1, 'type': 'select_highlight', 'bufnr': s:state.result_buf.bufnr})
+                let col = byteidx(item, pos)
+                let length = len(item[pos])
+                call prop_add(bufline, col + 1, {'length': length, 'type': 'select_highlight', 'bufnr': s:state.result_buf.bufnr})
             endfor
         endfor
     endif
