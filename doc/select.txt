@@ -45,6 +45,7 @@ Maximum items to be collected and matched against, default 50000.
 >
     let g:select_max_total_items = 50000
 
+Has effect only for data collected by jobs.
 For example, if you `:Select projectfile ~` you will only be able to select out
 of 50000 files.
 
