@@ -61,7 +61,8 @@ let s:select.projectfile.prompt = "Project File> "
 """
 let s:select.mru = {}
 let s:select.mru.data = {-> filter(copy(v:oldfiles), {_,v -> filereadable(expand(v))})}
-let s:select.mru.sink = {"transform": {_, v -> fnameescape(v)},
+let s:select.mru.sink = {
+            \ "transform": {_, v -> fnameescape(v)},
             \ "action": "edit %s",
             \ "action2": "split %s",
             \ "action3": "vsplit %s",
@@ -75,7 +76,8 @@ let s:select.mru.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*
 """
 let s:select.buffer = {}
 let s:select.buffer.data = {-> s:get_buffer_list()}
-let s:select.buffer.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')},
+let s:select.buffer.sink = {
+            \ "transform": {_, v -> matchstr(v, '^\s*\zs\d\+')},
             \ "action": "buffer %s",
             \ "action2": "sbuffer %s",
             \ "action3": "vert sbuffer %s",
