@@ -1,29 +1,38 @@
-"" Select definitions
+""" Select definitions
+
+let s:select = {}
 
 func! select#def#get()
     return s:select
 endfunc
 
 
-let s:select = {}
+"""
+""" Select file
+"""
 let s:select.file = {}
-let s:select.projectfile = {}
-let s:select.project = {}
-let s:select.mru = {}
-let s:select.buffer = {}
-let s:select.colors = {}
-let s:select.command = {}
-let s:select.help = {}
-let s:select.bufline = {}
-
 let s:select.file.data = {path ->
             \  map(readdirex(path, {d -> d.type =~ '\%(dir\|linkd\)$'}), {_, v -> v.name..'/'})
             \+ map(readdirex(path, {d -> d.type =~ '\%(file\|link\)$'}), {_, v -> v.name})
             \ }
-let s:select.file.sink = {"transform": {p, v -> fnameescape(p..v)}, "empty": {v -> v}, "special": {state, val -> s:special_visit_directory(state, val)}, "action_new": "edit %s", "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
+let s:select.file.sink = {
+            \ "transform": {p, v -> fnameescape(p..v)},
+            \ "empty": {v -> v},
+            \ "special": {state, val -> s:special_visit_directory(state, val)},
+            \ "action_new": "edit %s",
+            \ "action": "edit %s",
+            \ "action2": "split %s",
+            \ "action3": "vsplit %s",
+            \ "action4": "tab split %s"
+            \ }
 let s:select.file.highlight = {"Directory": ['^.*/$', 'Directory']}
 let s:select.file.prompt = "File> "
 
+
+"""
+""" Select projectfile
+"""
+let s:select.projectfile = {}
 if executable('fd')
     let s:select.projectfile.data = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
 elseif executable('fdfind')
@@ -35,36 +44,100 @@ elseif !has("win32")
 else
     let s:select.projectfile.data = ""
 endif
-let s:select.projectfile.sink = {"transform": {p, v -> fnameescape(p..v)}, "special": {state, val -> s:special_save_project(state, val)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
+let s:select.projectfile.sink = {
+            \ "transform": {p, v -> fnameescape(p..v)},
+            \ "special": {state, val -> s:special_save_project(state, val)},
+            \ "action": "edit %s",
+            \ "action2": "split %s",
+            \ "action3": "vsplit %s",
+            \ "action4": "tab split %s"
+            \ }
 let s:select.projectfile.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
 let s:select.projectfile.prompt = "Project File> "
 
+
+"""
+""" Select mru
+"""
+let s:select.mru = {}
 let s:select.mru.data = {-> filter(copy(v:oldfiles), {_,v -> filereadable(expand(v))})}
-let s:select.mru.sink = {"transform": {_, v -> fnameescape(v)}, "action": "edit %s", "action2": "split %s", "action3": "vsplit %s", "action4": "tab split %s"}
+let s:select.mru.sink = {"transform": {_, v -> fnameescape(v)},
+            \ "action": "edit %s",
+            \ "action2": "split %s",
+            \ "action3": "vsplit %s",
+            \ "action4": "tab split %s"
+            \ }
 let s:select.mru.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
 
-let s:select.buffer.data = {-> s:get_buffer_list()}
-let s:select.buffer.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "buffer %s", "action2": "sbuffer %s", "action3": "vert sbuffer %s", "action4": "tab sbuffer %s"}
-let s:select.buffer.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment'], "PrependBufNr": ['^\(\s*\d\+:\)', 'Identifier']}
 
+"""
+""" Select buffer
+"""
+let s:select.buffer = {}
+let s:select.buffer.data = {-> s:get_buffer_list()}
+let s:select.buffer.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')},
+            \ "action": "buffer %s",
+            \ "action2": "sbuffer %s",
+            \ "action3": "vert sbuffer %s",
+            \ "action4": "tab sbuffer %s"
+            \ }
+let s:select.buffer.highlight = {
+            \ "DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment'],
+            \ "PrependBufNr": ['^\(\s*\d\+:\)', 'Identifier']
+            \ }
+
+
+"""
+""" Select colors
+"""
+let s:select.colors = {}
 let s:select.colors.data = {-> s:get_colorscheme_list()}
 let s:select.colors.sink = "colorscheme %s"
 
+
+"""
+""" Select command
+"""
+let s:select.command = {}
 let s:select.command.data = {-> getcompletion('', 'command')}
 let s:select.command.sink = {"action": {v -> feedkeys(':'..v, 'n')}}
 
+
+"""
+""" Select project
+"""
+let s:select.project = {}
 let s:select.project.data = {-> s:get_project_list()}
 let s:select.project.sink = {"action": "Select projectfile %s", "action2": "Select file %s"}
 let s:select.project.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
 
+
+"""
+""" Select help
+"""
+let s:select.help = {}
 let s:select.help.data = {"cmd": {-> s:get_helptags()}}
 let s:select.help.sink = "help %s"
 
-let s:select.bufline.data = {_, v -> map(getbufline(v.bufnr, 1, "$"), {i, ln -> printf("%*d: %s", len(line('$', v.winid)), i+1, ln)})}
-let s:select.bufline.sink = {"transform": {_, v -> matchstr(v, '^\s*\zs\d\+')}, "action": "normal %sG"}
+
+"""
+""" Select bufline
+"""
+let s:select.bufline = {}
+let s:select.bufline.data = {_, v ->
+            \ getbufline(v.bufnr, 1, "$")->map({i, ln -> printf("%*d: %s", len(line('$', v.winid)), i+1, ln)})
+            \ }
+let s:select.bufline.sink = {
+            \ "transform": {_, v -> matchstr(v, '^\s*\zs\d\+')},
+            \ "action": "normal %sG"
+            \ }
 let s:select.bufline.highlight = {"PrependLineNr": ['^\(\s*\d\+:\)', 'LineNr']}
 
 
+
+"""
+""" Helpers
+"""
 
 "" Buffer list is sorted by lastused time + 2 most recently used buffers
 "" are exchanged/switched:
