@@ -172,8 +172,8 @@ endfunc
 """
 func! s:create_prompt_buf() abort
     let bufnr = s:prepare_buffer('prompt')
-    call s:add_prompt_mappings()
-    call s:add_prompt_autocommands()
+    call s:setup_prompt_mappings()
+    call s:setup_prompt_autocommands()
 
     return {"bufnr": bufnr, "winid": bufnr->bufwinid()}
 endfunc
@@ -252,7 +252,7 @@ func! s:prepare_buffer(type)
 endfunc
 
 
-func! s:add_prompt_mappings() abort
+func! s:setup_prompt_mappings() abort
     inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
     inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('action2')<CR>
     inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action2')<CR>
@@ -273,7 +273,7 @@ func! s:add_prompt_mappings() abort
 endfunc
 
 
-func! s:add_prompt_autocommands() abort
+func! s:setup_prompt_autocommands() abort
     augroup prompt | au!
         au TextChangedI <buffer> call s:update_results()
         au BufLeave <buffer> call <sid>close()
