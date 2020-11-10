@@ -210,7 +210,7 @@ func! s:prepare_buffer(type)
         exe printf('resize %d', s:state.max_height)
         setlocal buftype=nofile
         set filetype=selectresults
-        setlocal statusline=%#Statusline#%{select#statusline_type()}%=%{select#statusline_progress()}
+        setlocal statusline=%{select#statusline_type()}%=%{select#statusline_progress()}
         setlocal cursorline
         setlocal noruler
         setlocal laststatus=0
