@@ -129,7 +129,7 @@ let s:select.bufline.data = {_, v ->
             \ }
 let s:select.bufline.sink = {
             \ "transform": {_, v -> matchstr(v, '^\s*\zs\d\+')},
-            \ "action": "normal %sG"
+            \ "action": "normal! %sG"
             \ }
 let s:select.bufline.highlight = {"PrependLineNr": ['^\(\s*\d\+:\)', 'LineNr']}
 
