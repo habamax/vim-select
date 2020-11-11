@@ -57,6 +57,15 @@ let s:select.projectfile.prompt = "Project File> "
 
 
 """
+""" Select project
+"""
+let s:select.project = {}
+let s:select.project.data = {-> s:get_project_list()}
+let s:select.project.sink = {"action": "Select projectfile %s", "action2": "Select file %s"}
+let s:select.project.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
+
+
+"""
 """ Select mru
 """
 let s:select.mru = {}
@@ -90,54 +99,6 @@ let s:select.buffer.highlight = {
 
 
 """
-""" Select colors
-"""
-let s:select.colors = {}
-let s:select.colors.data = {-> s:get_colorscheme_list()}
-let s:select.colors.sink = "colorscheme %s"
-
-
-"""
-""" Select command
-"""
-let s:select.command = {}
-let s:select.command.data = {-> getcompletion('', 'command')}
-let s:select.command.sink = {"action": {v -> feedkeys(':'..v, 'n')}}
-
-
-"""
-""" Select project
-"""
-let s:select.project = {}
-let s:select.project.data = {-> s:get_project_list()}
-let s:select.project.sink = {"action": "Select projectfile %s", "action2": "Select file %s"}
-let s:select.project.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\ze.*$', 'Comment']}
-
-
-"""
-""" Select help
-"""
-let s:select.help = {}
-let s:select.help.data = {"cmd": {-> s:get_helptags()}}
-let s:select.help.sink = "help %s"
-
-
-"""
-""" Select bufline
-"""
-let s:select.bufline = {}
-let s:select.bufline.data = {_, v ->
-            \ getbufline(v.bufnr, 1, "$")->map({i, ln -> printf("%*d: %s", len(line('$', v.winid)), i+1, ln)})
-            \ }
-let s:select.bufline.sink = {
-            \ "transform": {_, v -> matchstr(v, '^\s*\zs\d\+')},
-            \ "action": "normal! %sG"
-            \ }
-let s:select.bufline.highlight = {"PrependLineNr": ['^\(\s*\d\+:\)', 'LineNr']}
-
-
-
-"""
 """ Helpers
 """
 
@@ -150,24 +111,6 @@ func! s:get_buffer_list() abort
     let l:Sort = {a, b -> a.lastused == b.lastused ? 0 : a.lastused > b.lastused ? -1 : 1}
     let buflist = sort(getbufinfo({'buflisted': 1}), l:Sort)
     return map(buflist[1:1] + buflist[0:0] + buflist[2:], {k, v -> printf("%3d: %s", v.bufnr, (empty(v.name) ? "[No Name]" : v.variables->has_key("netrw_browser_active") ? substitute(v.name, '\\\+', '/', 'g')..'/' : substitute(fnamemodify(v.name, ":p:."), '\\\+', '/', 'g')))})
-endfunc
-
-
-"" Colorscheme list.
-"" * remove current colorscheme name  from the list of all sorted colorschemes.
-"" * put current colorscheme name on top of the colorscheme list.
-"" Thus current colorscheme is initially preselected.
-func! s:get_colorscheme_list() abort
-    let colors_name = get(g:, "colors_name", "default")
-    return [colors_name] + filter(getcompletion('', 'color'), {_, v -> v != colors_name})
-endfunc
-
-
-"" List of all help tags/topics.
-"" Uses ripgrep.
-func! s:get_helptags() abort
-    let l:help = split(globpath(&runtimepath, 'doc/tags', 1), '\n')
-    return 'rg ^[^[:space:]]+ -No --no-heading --no-filename '..join(map(l:help, {_,v -> fnameescape(v)}))
 endfunc
 
 
