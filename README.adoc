@@ -190,7 +190,7 @@ play it:
 [source,vim]
 ------------------------------------------------------------------------------
 let g:select_info.sound = {}
-let g:select_info.sound.data = {"cmd": "rg --files --glob *.mp3"}
+let g:select_info.sound.data = {"job": "rg --files --glob *.mp3"}
 let g:select_info.sound.sink = {"transform": {p, v -> p..v}, "action": {v -> sound_playfile(v)}}
 ------------------------------------------------------------------------------
 
@@ -214,7 +214,7 @@ Just add to `~/.vim/after/ftplugin/gdscript.vim`:
 [source,vim]
 ------------------------------------------------------------------------------
 let b:select_info = {"godotscene": {}}
-let b:select_info.godotscene.data = {"cmd": "rg --files --glob *.tscn"}
+let b:select_info.godotscene.data = {"job": "rg --files --glob *.tscn"}
 let b:select_info.godotscene.sink = {"transform": {_, v -> fnameescape(v)}, "action": "GodotRun %s"}
 nnoremap <buffer> <leader><leader>f :Select godotscene<CR>
 ------------------------------------------------------------------------------
