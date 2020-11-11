@@ -131,7 +131,12 @@ endfunc
 
 func! select#job_out(channel, msg) abort
     if len(s:state.cached_items) < s:state.max_total_items
-        call add(s:state.cached_items, a:msg)
+        " transform msg if data transform_output lambda exists
+        if s:func_exists('data', 'transform_output')
+            call add(s:state.cached_items, s:func('data', 'transform_output', a:msg))
+        else
+            call add(s:state.cached_items, a:msg)
+        endif
     elseif s:state->has_key("job")
         call job_stop(s:state.job)
         unlet s:state.job
