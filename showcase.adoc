@@ -1,0 +1,24 @@
+= Showcase
+
+== Select Buffer
+
+image::https://user-images.githubusercontent.com/234774/98787050-0791bb80-2410-11eb-8761-de20588c432d.gif[]
+
+== Select MRU
+
+image::https://user-images.githubusercontent.com/234774/98787054-09f41580-2410-11eb-9224-e94f9228c761.gif[]
+
+
+== Select File
+
+image::https://user-images.githubusercontent.com/234774/98787052-095b7f00-2410-11eb-8fcf-2381de8e2cc7.gif[]
+
+
+== Select Project File
+
+image::https://user-images.githubusercontent.com/234774/98787058-0b254280-2410-11eb-9343-92adce262af8.gif[]
+
+
+== Select Project
+
+image::https://user-images.githubusercontent.com/234774/98787055-0a8cac00-2410-11eb-8410-2b83a809f81e.gif[]
