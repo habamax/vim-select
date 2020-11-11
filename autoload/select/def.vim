@@ -34,13 +34,13 @@ let s:select.file.prompt = "File> "
 """
 let s:select.projectfile = {}
 if executable('fd')
-    let s:select.projectfile.data = {"cmd": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
+    let s:select.projectfile.data = {"job": "fd --type f --hidden --follow --no-ignore-vcs --exclude .git"}
 elseif executable('fdfind')
-    let s:select.projectfile.data = {"cmd": "fdfind --type f --hidden --follow --no-ignore-vcs --exclude .git"}
+    let s:select.projectfile.data = {"job": "fdfind --type f --hidden --follow --no-ignore-vcs --exclude .git"}
 elseif executable('rg')
-    let s:select.projectfile.data = {"cmd": "rg --files --no-ignore-vcs --hidden --glob !.git"}
+    let s:select.projectfile.data = {"job": "rg --files --no-ignore-vcs --hidden --glob !.git"}
 elseif !has("win32")
-    let s:select.projectfile.data = {"cmd": "find -type f -not -path \"*/.git/*\""}
+    let s:select.projectfile.data = {"job": "find -type f -not -path \"*/.git/*\""}
 else
     let s:select.projectfile.data = ""
 endif

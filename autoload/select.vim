@@ -75,10 +75,10 @@ func! s:update_results() abort
         if type(s:select[s:state.type].data) == v:t_func
             let s:state.cached_items = s:select[s:state.type].data(s:state.path, s:state.init_buf)
         elseif !s:state.job_started && !s:state->has_key('job') && type(s:select[s:state.type].data) == v:t_dict
-            if type(s:select[s:state.type].data["cmd"]) == v:t_string
-                let cmd = s:select[s:state.type].data["cmd"]
-            elseif type(s:select[s:state.type].data["cmd"]) == v:t_func
-                let cmd = s:select[s:state.type].data["cmd"](s:state.path, s:state.init_buf)
+            if type(s:select[s:state.type].data["job"]) == v:t_string
+                let cmd = s:select[s:state.type].data["job"]
+            elseif type(s:select[s:state.type].data["job"]) == v:t_func
+                let cmd = s:select[s:state.type].data["job"](s:state.path, s:state.init_buf)
             else
                 return
             endif
