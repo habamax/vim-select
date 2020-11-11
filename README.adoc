@@ -1,7 +1,7 @@
 = vim-select: fuzzy select file/buffer/MRU/etc
-:toc:
 
-Plugin works with recent (nightly) vim having `matchfuzzypos()` function and
+
+NOTE: Plugin works with recent (nightly) vim having `matchfuzzypos()` function and
 `prompt-buffer` feature implemented.
 
 For project files, buffers and MRU it lets you narrow down the list with fuzzy
@@ -18,6 +18,7 @@ By default it uses vim current working directory as a project root.
 image::https://user-images.githubusercontent.com/234774/95853492-30b22400-0d5e-11eb-9a18-934752f5c22f.gif[]
 
 link:showcase.adoc[More animated gifs]
+
 
 NOTE: Extensions are available: https://github.com/habamax/vim-select-more
 
