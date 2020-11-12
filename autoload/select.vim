@@ -324,7 +324,7 @@ func! s:setup_prompt_autocommands() abort
         " No need to map <ESC> too
         " FIXME: refactor when vim9 is out
         if has('patch-8.2.1978')
-            au InsertLeave <buffer> call <sid>close()
+            au InsertLeavePre <buffer> call <sid>close()
         endif
     augroup END
 endfunc
