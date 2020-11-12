@@ -278,6 +278,12 @@ func! s:setup_prompt_mappings() abort
     inoremap <silent><buffer> <PageDown> <ESC>:call <SID>on_next_page()<CR>
     inoremap <silent><buffer> <PageUp> <ESC>:call <SID>on_prev_page()<CR>
     inoremap <expr><silent><buffer> <BS> <sid>on_backspace()
+
+    inoremap <silent><buffer> <C-B> <Left>
+    inoremap <silent><buffer> <C-F> <Right>
+    inoremap <silent><buffer> <C-A> <Home>
+    inoremap <silent><buffer> <C-E> <End>
+    inoremap <silent><buffer> <C-D> <Delete>
 endfunc
 
 
