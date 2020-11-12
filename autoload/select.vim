@@ -93,6 +93,10 @@ func! s:update_results() abort
 
             if job_status(s:state.job) != 'fail'
                 let s:state.job_started = v:true
+                " update once in 50ms to get better "feedback"
+                call timer_start(50, {-> s:update_results()})
+                " then update once in 200ms
+                let s:state.update_timer = timer_start(200, {-> s:update_results()}, {"repeat": -1})
             endif
         endif
     endif
@@ -143,14 +147,11 @@ func! select#job_out(channel, msg) abort
         call job_stop(s:state.job)
         unlet s:state.job
     endif
-
-    if s:state->has_key("job") && job_status(s:state.job) == "run"
-        call s:update_results()
-    endif
 endfunc
 
 
 func! select#job_close(channel) abort
+    call timer_stop(s:state.update_timer)
     call s:update_results()
 endfunc
 
