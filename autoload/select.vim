@@ -290,6 +290,7 @@ func! s:setup_prompt_mappings() abort
         inoremap <silent><buffer> <C-V> <Cmd>call <SID>on_select('action3')<CR>
         inoremap <silent><buffer> <C-T> <Cmd>call <SID>on_select('action4')<CR>
         inoremap <silent><buffer> <C-j> <Cmd>call <SID>on_select('action_new')<CR>
+        inoremap <silent><buffer> <ESC> <Cmd>call <SID>on_cancel()<CR>
         inoremap <silent><buffer> <C-c> <Cmd>call <SID>on_cancel()<CR>
         inoremap <silent><buffer> <TAB> <Cmd>call <SID>on_next_maybe()<CR>
         inoremap <silent><buffer> <S-TAB> <Cmd>call <SID>on_prev()<CR>
@@ -302,6 +303,7 @@ func! s:setup_prompt_mappings() abort
         " update results in function
         inoremap <silent><buffer> <BS> <Cmd>call <SID>on_backspace(v:true)<CR><BS>
     else
+        " FIXME: remove when vim9 is out
         inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
         inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('action2')<CR>
         inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action2')<CR>
@@ -343,12 +345,6 @@ func! s:setup_prompt_autocommands() abort
     augroup prompt | au!
         au TextChangedI <buffer> call s:update_results()
         au BufLeave <buffer> call <sid>close()
-        " if there is <Cmd> then we can safely use InsertLeave, no mappings
-        " would leave insert mode
-        " FIXME: refactor when vim9 is out
-        if has('patch-8.2.1978')
-            au InsertLeave <buffer> call <sid>close()
-        endif
     augroup END
 endfunc
 
