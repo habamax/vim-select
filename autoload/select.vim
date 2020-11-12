@@ -302,8 +302,8 @@ func! s:setup_prompt_mappings() abort
 
     inoremap <silent><buffer> <ESC>OD <Left>
     inoremap <silent><buffer> <ESC>OC <Right>
-    inoremap <silent><buffer> <ESC>OA <Up>
-    inoremap <silent><buffer> <ESC>OB <Down>
+    imap <silent><buffer> <ESC>OA <Up>
+    imap <silent><buffer> <ESC>OB <Down>
     imap <silent><buffer> <ESC>[Z <S-Tab>
 endfunc
 
