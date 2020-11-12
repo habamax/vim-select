@@ -34,6 +34,17 @@ func! select#do(type, ...) abort
         let s:state.laststatus = &laststatus
         let s:state.showmode = &showmode
         let s:state.ruler = &ruler
+        " 1. ESC is mapped to exit Select windows
+        " 2. Terminals send escape sequences for some of the keys: <left>,
+        "    <right>, <home>, <s-tab> etc...
+        " 3. When I press <left> Select window is closed and a new line with D
+        "    appears in a buffer (<left> == OD), which is unexpected.
+        " 4. One of the solutions would be to map those escape sequences to <left>,
+        "    <right> ...
+        " 5. Once mapped, ESC would "lag" on closing Select window.
+        " 6. To remove this lag, set timeoutlen to 0 here and restore it back on close.
+        let s:state.timeoutlen = &timeoutlen
+        set timeoutlen=0
 
         if a:0 == 1 && !empty(a:1)
             let s:state.path = s:normalize_path(fnamemodify(expand(a:1), ":p"))
@@ -173,6 +184,7 @@ func! s:close() abort
         let &laststatus = s:state.laststatus
         let &showmode = s:state.showmode
         let &ruler = s:state.ruler
+        let &timeoutlen = s:state.timeoutlen
     endtry
 endfunc
 
@@ -264,48 +276,23 @@ endfunc
 
 
 func! s:setup_prompt_mappings() abort
-    " check if <Cmd> exists
-    if has('patch-8.2.1978')
-        inoremap <silent><buffer> <CR> <Cmd>call <SID>on_select()<CR>
-        inoremap <silent><buffer> <S-CR> <Cmd>call <SID>on_select('action2')<CR>
-        inoremap <silent><buffer> <C-S> <Cmd>call <SID>on_select('action2')<CR>
-        inoremap <silent><buffer> <C-V> <Cmd>call <SID>on_select('action3')<CR>
-        inoremap <silent><buffer> <C-T> <Cmd>call <SID>on_select('action4')<CR>
-        inoremap <silent><buffer> <C-j> <Cmd>call <SID>on_select('action_new')<CR>
-        inoremap <silent><buffer> <C-c> <Cmd>call <SID>on_cancel()<CR>
-        inoremap <silent><buffer> <TAB> <Cmd>call <SID>on_next_maybe()<CR>
-        inoremap <silent><buffer> <S-TAB> <Cmd>call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <C-n> <Cmd>call <SID>on_next()<CR>
-        inoremap <silent><buffer> <C-p> <Cmd>call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <Down> <Cmd>call <SID>on_next()<CR>
-        inoremap <silent><buffer> <Up> <Cmd>call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <PageDown> <Cmd>call <SID>on_next_page()<CR>
-        inoremap <silent><buffer> <PageUp> <Cmd>call <SID>on_prev_page()<CR>
-        " update results in function
-        inoremap <silent><buffer> <BS> <Cmd>call <SID>on_backspace(v:true)<CR><BS>
-    else
-        " FIXME: remove when vim9 is out
-        inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
-        inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('action2')<CR>
-        inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action2')<CR>
-        inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('action3')<CR>
-        inoremap <silent><buffer> <C-T> <ESC>:call <SID>on_select('action4')<CR>
-        inoremap <silent><buffer> <C-j> <ESC>:call <SID>on_select('action_new')<CR>
-        inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
-        inoremap <silent><buffer> <C-c> <ESC>:call <SID>on_cancel()<CR>
-        inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
-        inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <C-n> <ESC>:call <SID>on_next()<CR>
-        inoremap <silent><buffer> <C-p> <ESC>:call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <Down> <ESC>:call <SID>on_next()<CR>
-        inoremap <silent><buffer> <Up> <ESC>:call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <PageDown> <ESC>:call <SID>on_next_page()<CR>
-        inoremap <silent><buffer> <PageUp> <ESC>:call <SID>on_prev_page()<CR>
-        " Can't update results in function, trigger TextChangedI event to
-        " update...
-        " FIXME: refactor when vim9 is out.
-        inoremap <expr><silent><buffer> <BS> <SID>on_backspace(v:false) .. "\<Space>\<BS>\<BS>"
-    endif
+    inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
+    inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('action2')<CR>
+    inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action2')<CR>
+    inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('action3')<CR>
+    inoremap <silent><buffer> <C-T> <ESC>:call <SID>on_select('action4')<CR>
+    inoremap <silent><buffer> <C-j> <ESC>:call <SID>on_select('action_new')<CR>
+    inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
+    inoremap <silent><buffer> <C-c> <ESC>:call <SID>on_cancel()<CR>
+    inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
+    inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
+    inoremap <silent><buffer> <C-n> <ESC>:call <SID>on_next()<CR>
+    inoremap <silent><buffer> <C-p> <ESC>:call <SID>on_prev()<CR>
+    inoremap <silent><buffer> <Down> <ESC>:call <SID>on_next()<CR>
+    inoremap <silent><buffer> <Up> <ESC>:call <SID>on_prev()<CR>
+    inoremap <silent><buffer> <PageDown> <ESC>:call <SID>on_next_page()<CR>
+    inoremap <silent><buffer> <PageUp> <ESC>:call <SID>on_prev_page()<CR>
+    inoremap <expr><silent><buffer> <BS> <SID>on_backspace() .. "\<BS>"
 
     inoremap <silent><buffer> <C-B> <Left>
     inoremap <silent><buffer> <C-F> <Right>
@@ -313,6 +300,17 @@ func! s:setup_prompt_mappings() abort
     inoremap <silent><buffer> <C-E> <End>
     inoremap <silent><buffer> <C-D> <Delete>
 
+    if !has("win32")
+        imap <silent><buffer> <ESC>OD <Left>
+        imap <silent><buffer> <ESC>OC <Right>
+        imap <silent><buffer> <ESC>OA <Up>
+        imap <silent><buffer> <ESC>OB <Down>
+        imap <silent><buffer> <ESC>[Z <S-Tab>
+        imap <silent><buffer> <ESC>[5~ <PageUp>
+        imap <silent><buffer> <ESC>[6~ <PageDown>
+        imap <silent><buffer> <ESC>[1~ <Home>
+        imap <silent><buffer> <ESC>[4~ <End>
+    endif
 endfunc
 
 
@@ -320,13 +318,6 @@ func! s:setup_prompt_autocommands() abort
     augroup prompt | au!
         au TextChangedI <buffer> call s:update_results()
         au BufLeave <buffer> call <sid>close()
-        " if there is <Cmd> then we can safely use InsertLeave, no mappings
-        " would leave insert mode.
-        " No need to map <ESC> too
-        " FIXME: refactor when vim9 is out
-        if has('patch-8.2.1978')
-            au InsertLeavePre <buffer> call <sid>close()
-        endif
     augroup END
 endfunc
 
@@ -455,16 +446,15 @@ func! s:on_prev_page() abort
 endfunc
 
 
-func! s:on_backspace(update_res) abort
+func! s:on_backspace() abort
     if s:state.type == 'file' && empty(s:get_prompt_value())
         let parent_path = fnamemodify(s:state.path, ":p:h:h")
         if parent_path != s:state.path
             let s:state.path = substitute(parent_path..'/', '[/\\]\+', '/', 'g')
             let s:state.cached_items = []
-            if a:update_res
-                call s:update_results()
-            endif
         endif
+        " Trigger TextChangedI and s:update_results()
+        return "\<Space>\<BS>"
     endif
     return ''
 endfunc
