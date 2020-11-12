@@ -324,14 +324,15 @@ func! s:setup_prompt_mappings() abort
         " update...
         " FIXME: refactor when vim9 is out.
         inoremap <expr><silent><buffer> <BS> <SID>on_backspace(v:false) .. "\<Space>\<BS>\<BS>"
+    endif
 
+    if !has("win32")
         inoremap <silent><buffer> <ESC>OD <Left>
         inoremap <silent><buffer> <ESC>OC <Right>
         imap <silent><buffer> <ESC>OA <Up>
         imap <silent><buffer> <ESC>OB <Down>
         imap <silent><buffer> <ESC>[Z <S-Tab>
     endif
-
     inoremap <silent><buffer> <C-B> <Left>
     inoremap <silent><buffer> <C-F> <Right>
     inoremap <silent><buffer> <C-A> <Home>
