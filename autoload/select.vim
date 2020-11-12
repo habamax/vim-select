@@ -29,9 +29,23 @@ func! select#do(type, ...) abort
     endif
 
     try
+        " Global settings change -- they would be restored when Select window is
+        " closed.
         let s:state.laststatus = &laststatus
         let s:state.showmode = &showmode
         let s:state.ruler = &ruler
+
+        " ESC is setup to exit Select windows but there are keys that
+        " produce escape sequences -- <Left>, <Right>, etc. And if you press
+        " them you end up messing a buffer, e.g. <Left> is a OD, you press
+        " <ESC> it closes Select window, Open a new line in a current buffer and
+        " add D char there.
+        " To fix it I remapped some of those escape sequences but then <ESC>
+        " doesn't close Select windows "immediatly" due to timeoutlen setting...
+        " So I set it to some small value on Select window open and restore it
+        " on Select window close.
+        let s:state.timeoutlen = &timeoutlen
+        set timeoutlen=10
 
         if a:0 == 1 && !empty(a:1)
             let s:state.path = s:normalize_path(fnamemodify(expand(a:1), ":p"))
@@ -170,6 +184,7 @@ func! s:close() abort
         let &laststatus = s:state.laststatus
         let &showmode = s:state.showmode
         let &ruler = s:state.ruler
+        let &timeoutlen = s:state.timeoutlen
     endtry
 endfunc
 
@@ -284,6 +299,12 @@ func! s:setup_prompt_mappings() abort
     inoremap <silent><buffer> <C-A> <Home>
     inoremap <silent><buffer> <C-E> <End>
     inoremap <silent><buffer> <C-D> <Delete>
+
+    inoremap <silent><buffer> <ESC>OD <Left>
+    inoremap <silent><buffer> <ESC>OC <Right>
+    inoremap <silent><buffer> <ESC>OA <Up>
+    inoremap <silent><buffer> <ESC>OB <Down>
+    imap <silent><buffer> <ESC>[Z <S-Tab>
 endfunc
 
 
