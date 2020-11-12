@@ -292,7 +292,7 @@ func! s:setup_prompt_mappings() abort
     inoremap <silent><buffer> <Up> <ESC>:call <SID>on_prev()<CR>
     inoremap <silent><buffer> <PageDown> <ESC>:call <SID>on_next_page()<CR>
     inoremap <silent><buffer> <PageUp> <ESC>:call <SID>on_prev_page()<CR>
-    inoremap <expr><silent><buffer> <BS> <sid>on_backspace()
+    inoremap <expr><silent><buffer> <BS> <SID>on_backspace()
 
     inoremap <silent><buffer> <C-B> <Left>
     inoremap <silent><buffer> <C-F> <Right>
@@ -446,10 +446,16 @@ func! s:on_backspace() abort
         if parent_path != s:state.path
             let s:state.path = substitute(parent_path..'/', '[/\\]\+', '/', 'g')
             let s:state.cached_items = []
-            call s:update_results()
+            " Indirectly update results buffer -- you can't do it directly by
+            " calling s:update_results or trigger TextChangedI event with
+            " doautocmd...
+            " But you can trigger TextChangedI event inputing "empty result"
+            " text - Space and Backspace.
+            return " \<BS>"
         endif
+    else
+        return "\<BS>"
     endif
-    return "\<BS>"
 endfunc
 
 
