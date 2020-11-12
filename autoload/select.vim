@@ -35,21 +35,6 @@ func! select#do(type, ...) abort
         let s:state.showmode = &showmode
         let s:state.ruler = &ruler
 
-        " ESC is setup to exit Select windows but there are keys that
-        " produce escape sequences -- <Left>, <Right>, etc. And if you press
-        " them you end up messing a buffer, e.g. <Left> is a OD, you press
-        " <ESC> it closes Select window, Open a new line in a current buffer and
-        " add D char there.
-        " To fix it I remapped some of those escape sequences but then <ESC>
-        " doesn't close Select windows "immediatly" due to timeoutlen setting...
-        " So I set it to some small value on Select window open and restore it
-        " on Select window close.
-        " FIXME: refactor when vim9 is out
-        if !has('patch-8.2.1978')
-            let s:state.timeoutlen = &timeoutlen
-            set timeoutlen=10
-        endif
-
         if a:0 == 1 && !empty(a:1)
             let s:state.path = s:normalize_path(fnamemodify(expand(a:1), ":p"))
         elseif a:type == 'file'
@@ -187,10 +172,6 @@ func! s:close() abort
         let &laststatus = s:state.laststatus
         let &showmode = s:state.showmode
         let &ruler = s:state.ruler
-        " FIXME: refactor when vim9 is out
-        if !has('patch-8.2.1978')
-            let &timeoutlen = s:state.timeoutlen
-        endif
     endtry
 endfunc
 
@@ -290,7 +271,6 @@ func! s:setup_prompt_mappings() abort
         inoremap <silent><buffer> <C-V> <Cmd>call <SID>on_select('action3')<CR>
         inoremap <silent><buffer> <C-T> <Cmd>call <SID>on_select('action4')<CR>
         inoremap <silent><buffer> <C-j> <Cmd>call <SID>on_select('action_new')<CR>
-        inoremap <silent><buffer> <ESC> <Cmd>call <SID>on_cancel()<CR>
         inoremap <silent><buffer> <C-c> <Cmd>call <SID>on_cancel()<CR>
         inoremap <silent><buffer> <TAB> <Cmd>call <SID>on_next_maybe()<CR>
         inoremap <silent><buffer> <S-TAB> <Cmd>call <SID>on_prev()<CR>
@@ -326,13 +306,6 @@ func! s:setup_prompt_mappings() abort
         inoremap <expr><silent><buffer> <BS> <SID>on_backspace(v:false) .. "\<Space>\<BS>\<BS>"
     endif
 
-    if !has("win32")
-        inoremap <silent><buffer> <ESC>OD <Left>
-        inoremap <silent><buffer> <ESC>OC <Right>
-        imap <silent><buffer> <ESC>OA <Up>
-        imap <silent><buffer> <ESC>OB <Down>
-        imap <silent><buffer> <ESC>[Z <S-Tab>
-    endif
     inoremap <silent><buffer> <C-B> <Left>
     inoremap <silent><buffer> <C-F> <Right>
     inoremap <silent><buffer> <C-A> <Home>
@@ -346,6 +319,13 @@ func! s:setup_prompt_autocommands() abort
     augroup prompt | au!
         au TextChangedI <buffer> call s:update_results()
         au BufLeave <buffer> call <sid>close()
+        " if there is <Cmd> then we can safely use InsertLeave, no mappings
+        " would leave insert mode.
+        " No need to map <ESC> too
+        " FIXME: refactor when vim9 is out
+        if has('patch-8.2.1978')
+            au InsertLeave <buffer> call <sid>close()
+        endif
     augroup END
 endfunc
 
@@ -487,24 +467,6 @@ func! s:on_backspace(update_res) abort
     endif
     return ''
 endfunc
-
-" func! s:on_backspace() abort
-"     if s:state.type == 'file' && empty(s:get_prompt_value())
-"         let parent_path = fnamemodify(s:state.path, ":p:h:h")
-"         if parent_path != s:state.path
-"             let s:state.path = substitute(parent_path..'/', '[/\\]\+', '/', 'g')
-"             let s:state.cached_items = []
-"             " Indirectly update results buffer -- you can't do it directly by
-"             " calling s:update_results or trigger TextChangedI event with
-"             " doautocmd...
-"             " But you can trigger TextChangedI event inputing "empty result"
-"             " text - Space and Backspace.
-"             return " \<BS>"
-"         endif
-"     else
-"         return "\<BS>"
-"     endif
-" endfunc
 
 
 """
