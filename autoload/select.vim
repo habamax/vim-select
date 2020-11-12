@@ -271,13 +271,13 @@ func! s:setup_prompt_mappings() abort
     inoremap <silent><buffer> <C-c> <ESC>:call <SID>on_cancel()<CR>
     inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
     inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
-    inoremap <silent><buffer> <BS> <ESC>:call <SID>on_backspace()<CR>
     inoremap <silent><buffer> <C-n> <ESC>:call <SID>on_next()<CR>
     inoremap <silent><buffer> <C-p> <ESC>:call <SID>on_prev()<CR>
     inoremap <silent><buffer> <Down> <ESC>:call <SID>on_next()<CR>
     inoremap <silent><buffer> <Up> <ESC>:call <SID>on_prev()<CR>
     inoremap <silent><buffer> <PageDown> <ESC>:call <SID>on_next_page()<CR>
     inoremap <silent><buffer> <PageUp> <ESC>:call <SID>on_prev_page()<CR>
+    inoremap <expr><silent><buffer> <BS> <sid>on_backspace()
 endfunc
 
 
@@ -397,21 +397,6 @@ func! s:on_next_page() abort
 endfunc
 
 
-func! s:on_backspace() abort
-    if s:state.type == 'file' && empty(s:get_prompt_value())
-        let parent_path = fnamemodify(s:state.path, ":p:h:h")
-        if parent_path != s:state.path
-            let s:state.path = substitute(parent_path..'/', '[/\\]\+', '/', 'g')
-            let s:state.cached_items = []
-            call s:update_results()
-        endif
-    else
-        normal! x
-    endif
-    startinsert!
-endfunc
-
-
 func! s:on_prev(...) abort
     let n = a:0 == 1 ? a:1 : 1
     if n == 1 && s:is_cursor_on_first_line()
@@ -425,6 +410,19 @@ endfunc
 
 func! s:on_prev_page() abort
     call s:on_prev(s:state.max_height - 1)
+endfunc
+
+
+func! s:on_backspace() abort
+    if s:state.type == 'file' && empty(s:get_prompt_value())
+        let parent_path = fnamemodify(s:state.path, ":p:h:h")
+        if parent_path != s:state.path
+            let s:state.path = substitute(parent_path..'/', '[/\\]\+', '/', 'g')
+            let s:state.cached_items = []
+            call s:update_results()
+        endif
+    endif
+    return "\<BS>"
 endfunc
 
 
