@@ -95,8 +95,8 @@ func! s:update_results() abort
                 let s:state.job_started = v:true
                 " update once in 50ms to get better "feedback"
                 call timer_start(50, {-> s:update_results()})
-                " then update once in 200ms
-                let s:state.update_timer = timer_start(200, {-> s:update_results()}, {"repeat": -1})
+                " then update once in 250ms
+                let s:state.update_timer = timer_start(250, {-> s:update_results()}, {"repeat": -1})
             endif
         endif
     endif
