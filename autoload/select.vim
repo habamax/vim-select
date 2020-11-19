@@ -104,8 +104,8 @@ func! s:update_results() abort
 
             if job_status(s:state.job) != 'fail'
                 let s:state.job_started = v:true
-                " Update results one time after 50ms to get better "response feel".
-                call timer_start(50, {-> s:update_results()})
+                " Update results one time after 20ms to get better "response feel".
+                call timer_start(20, {-> s:update_results()})
                 " Then update results every 250ms
                 let s:state.update_timer = timer_start(250, {-> s:update_results()}, {"repeat": -1})
             endif
