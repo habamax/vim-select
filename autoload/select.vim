@@ -281,13 +281,13 @@ func! s:setup_prompt_mappings() abort
     inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action2')<CR>
     inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('action3')<CR>
     inoremap <silent><buffer> <C-T> <ESC>:call <SID>on_select('action4')<CR>
-    inoremap <silent><buffer> <C-j> <ESC>:call <SID>on_select('action_new')<CR>
+    inoremap <silent><buffer> <C-J> <ESC>:call <SID>on_select('action_new')<CR>
     inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
-    inoremap <silent><buffer> <C-c> <ESC>:call <SID>on_cancel()<CR>
+    inoremap <silent><buffer> <C-C> <ESC>:call <SID>on_cancel()<CR>
     inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
     inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
-    inoremap <silent><buffer> <C-n> <ESC>:call <SID>on_next()<CR>
-    inoremap <silent><buffer> <C-p> <ESC>:call <SID>on_prev()<CR>
+    inoremap <silent><buffer> <C-N> <ESC>:call <SID>on_next()<CR>
+    inoremap <silent><buffer> <C-P> <ESC>:call <SID>on_prev()<CR>
     inoremap <silent><buffer> <Down> <ESC>:call <SID>on_next()<CR>
     inoremap <silent><buffer> <Up> <ESC>:call <SID>on_prev()<CR>
     inoremap <silent><buffer> <PageDown> <ESC>:call <SID>on_next_page()<CR>
@@ -299,6 +299,13 @@ func! s:setup_prompt_mappings() abort
     inoremap <silent><buffer> <C-A> <Home>
     inoremap <silent><buffer> <C-E> <End>
     inoremap <silent><buffer> <C-D> <Delete>
+    inoremap <silent><buffer> <C-K> <C-O>D
+    inoremap <silent><buffer> <C-Y> <C-R>"
+    inoremap <silent><buffer> <M-d> <C-O>de
+    inoremap <silent><buffer> <M-f> <C-Right>
+    inoremap <silent><buffer> <M-b> <C-Left>
+    inoremap <silent><buffer> <M-e> <End>
+    inoremap <silent><buffer> <M-a> <Home>
 
     if !has("win32")
         imap <silent><buffer> <ESC>OD <Left>
