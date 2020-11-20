@@ -324,6 +324,7 @@ func! s:setup_prompt_autocommands() abort
     augroup prompt | au!
         au TextChangedI <buffer> call s:update_results()
         au BufLeave <buffer> call <sid>close()
+        au InsertLeave <buffer> setlocal nomodified
     augroup END
 endfunc
 
