@@ -6,7 +6,7 @@ License: MIT
 
 
 
-INTRODUCTION                                                          *select*
+INTRODUCTION                                                   *select-plugin*
 
 Plugin works with recent (nightly) vim having |matchfuzzypos| function and
 |prompt-buffer| feature implemented.
@@ -24,7 +24,7 @@ By default it uses vim current working directory as a project root.
 NOTE: Extensions are available: https://github.com/habamax/vim-select-more
 
 
-SETTINGS                                                     *select-settings*
+SETTINGS                                              *select-plugin-settings*
 
 
 *g:select_max_height*
@@ -53,7 +53,7 @@ of 50000 files.
 
 
 
-MAPPINGS                                                     *select-mappings*
+MAPPINGS                                              *select-plugin-mappings*
 
 There are no default global mappings -- create your own.
 
@@ -79,7 +79,7 @@ or regular:
 
 
 
-DEFAULT SELECT WINDOW MAPPINGS                       *select-default-mappings*
+DEFAULT SELECT WINDOW MAPPINGS                *select-plugin-default-mappings*
 
 <ESC> to close the select window.                               *select-<ESC>*
 
@@ -109,7 +109,7 @@ Only available for |:Select_file|.
 
 
 
-COMMANDS                                                     *select-commands*
+COMMANDS                                              *select-plugin-commands*
 
 :Select                                                              *:Select*
 
@@ -155,7 +155,7 @@ Select file from |v:oldfiles| AKA Most Recently Used.
 
 
 
-EXTENDING                                                   *select_extending*
+EXTENDING                                            *select-plugin-extending*
 
 First of all create an "extension point":
 
