@@ -66,7 +66,7 @@ func! select#do(type, ...) abort
         if s:state->has_key("job")
             unlet s:state.job
         endif
-        call s:update_results()
+        call s:cache_data()
         startinsert!
     catch /.*/
         echomsg v:exception
@@ -79,41 +79,43 @@ endfunc
 """
 """ Data handling
 """
+func! s:cache_data() abort
+    if !empty(s:state.cached_items)
+        return
+    endif
+
+    if type(s:select[s:state.type].data) == v:t_func
+        let s:state.cached_items = s:select[s:state.type].data(s:state.path, s:state.init_buf)
+    elseif !s:state.job_started && !s:state->has_key('job') && type(s:select[s:state.type].data) == v:t_dict
+        if type(s:select[s:state.type].data["job"]) == v:t_string
+            let cmd = s:select[s:state.type].data["job"]
+        elseif type(s:select[s:state.type].data["job"]) == v:t_func
+            let cmd = s:select[s:state.type].data["job"](s:state.path, s:state.init_buf)
+        else
+            return
+        endif
+
+        let s:state.job = job_start(cmd, {
+                    \ "out_cb": "select#job_out",
+                    \ "close_cb": "select#job_close",
+                    \ "cwd": s:state.path})
+
+
+        if job_status(s:state.job) != 'fail'
+            let s:state.job_started = v:true
+            " Update results in 50ms to get better "response feel".
+            call timer_start(50, {-> s:update_results()})
+            " Then update results every 250ms
+            let s:state.update_timer = timer_start(250, {-> s:update_results()}, {"repeat": -1})
+        endif
+    endif
+endfunc
+
+
 func! s:update_results() abort
     if bufwinnr(s:state.result_buf.bufnr) == -1
         return
     endif
-
-    if empty(s:state.cached_items)
-        if type(s:select[s:state.type].data) == v:t_func
-            let s:state.cached_items = s:select[s:state.type].data(s:state.path, s:state.init_buf)
-        elseif !s:state.job_started && !s:state->has_key('job') && type(s:select[s:state.type].data) == v:t_dict
-            if type(s:select[s:state.type].data["job"]) == v:t_string
-                let cmd = s:select[s:state.type].data["job"]
-            elseif type(s:select[s:state.type].data["job"]) == v:t_func
-                let cmd = s:select[s:state.type].data["job"](s:state.path, s:state.init_buf)
-            else
-                return
-            endif
-
-            let s:state.job = job_start(cmd, {
-                        \ "out_cb": "select#job_out",
-                        \ "close_cb": "select#job_close",
-                        \ "cwd": s:state.path})
-
-
-            if job_status(s:state.job) != 'fail'
-                let s:state.job_started = v:true
-                " Update results in 50ms to get better "response feel".
-                call timer_start(50, {-> s:update_results()})
-                " Then update results every 250ms
-                let s:state.update_timer = timer_start(250, {-> s:update_results()}, {"repeat": -1})
-            endif
-        endif
-    endif
-
-    let items = []
-    let highlights = []
 
     let input = s:get_prompt_value()
 
@@ -124,6 +126,7 @@ func! s:update_results() abort
     else
         let matched_items_cnt = len(s:state.cached_items)
         let items = s:state.cached_items[0 : s:state.max_buffer_items]
+        let highlights = []
     endif
 
     let s:state.stl_progress = printf(" %s/%s", matched_items_cnt, len(s:state.cached_items))
