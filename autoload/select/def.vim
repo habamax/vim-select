@@ -146,7 +146,7 @@ endfunc
 
 
 "" Handle special case for Select file.
-"" When you Select file which is a directory it should visit it instead of opening.
+"" Directory selection should visit it instead of opening.
 "" If result is true --> Select window should not be closed
 func! s:special_visit_directory(state, path)
     if !isdirectory(a:path)
@@ -162,7 +162,7 @@ endfunc
 
 
 "" Handle second special case for Select file.
-"" When you Backspace in Select file and there was no input visit it parent directory.
+"" Backspace in Select file should visit parent directory if prompt is empty.
 "" If result is true --> Select window should not be closed
 func! s:special_visit_parent_directory(state, path)
     if !isdirectory(a:path) || a:path == a:state.path
