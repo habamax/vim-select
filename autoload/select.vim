@@ -457,11 +457,10 @@ endfunc
 
 
 func! s:on_backspace() abort
-    if s:state.type == 'file' && empty(s:get_prompt_value())
-        let parent_path = fnamemodify(s:state.path, ":p:h:h")
-        if parent_path != s:state.path
-            let s:state.path = substitute(parent_path..'/', '[/\\]\+', '/', 'g')
-            let s:state.cached_items = []
+    " handle backspace special case (E.g. Backspace in Select file when prompt
+    " is empty should visit parent directory
+    if empty(s:get_prompt_value()) && s:func_exists("sink", "special_bs")
+        if s:func("sink", "special_bs", s:state)
             call s:cache_data()
         endif
         " Trigger TextChangedI and s:update_results()

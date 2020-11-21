@@ -18,7 +18,8 @@ let s:select.file.data = {path ->
 let s:select.file.sink = {
             \ "transform": {p, v -> fnameescape(p..v)},
             \ "empty": {v -> v},
-            \ "special": {state, val -> s:special_visit_directory(state, val)},
+            \ "special": {state, val -> s:special_visit_directory(state, state.path..val)},
+            \ "special_bs": {state -> s:special_visit_parent_directory(state, fnamemodify(state.path, ":p:h:h"))},
             \ "action_new": "edit %s",
             \ "action": "edit %s",
             \ "action2": "split %s",
@@ -46,7 +47,7 @@ else
 endif
 let s:select.projectfile.sink = {
             \ "transform": {p, v -> fnameescape(p..v)},
-            \ "special": {state, val -> s:special_save_project(state, val)},
+            \ "special": {state, _ -> s:special_save_project(state)},
             \ "action": "edit %s",
             \ "action2": "split %s",
             \ "action3": "vsplit %s",
@@ -130,7 +131,7 @@ endfunc
 "" When you a file in Select projectfile, current working directory should be
 "" saved in .selectprojects
 "" Always return false (closes Select window)
-func! s:special_save_project(state, val)
+func! s:special_save_project(state)
     let project = trim(a:state.path, "/", 2)
     let projects = s:get_project_list()
     let projects = [project] + filter(projects, {_, v -> v != project})
@@ -147,14 +148,28 @@ endfunc
 "" Handle special case for Select file.
 "" When you Select file which is a directory it should visit it instead of opening.
 "" If result is true --> Select window should not be closed
-func! s:special_visit_directory(state, val)
-    if !isdirectory(a:state.path..a:val)
+func! s:special_visit_directory(state, path)
+    if !isdirectory(a:path)
         return v:false
     endif
 
-    let a:state.path = a:state.path..a:val
+    let a:state.path = a:path
     call setbufline(a:state.prompt_buf.bufnr, '$', '')
     call win_execute(a:state.result_buf.winid, 'normal! gg')
+    let a:state.cached_items = []
+    return v:true
+endfunc
+
+
+"" Handle second special case for Select file.
+"" When you Backspace in Select file and there was no input visit it parent directory.
+"" If result is true --> Select window should not be closed
+func! s:special_visit_parent_directory(state, path)
+    if !isdirectory(a:path) || a:path == a:state.path
+        return v:false
+    endif
+
+    let a:state.path = (a:path =~ '[/\\]$' ? a:path : a:path..'/')
     let a:state.cached_items = []
     return v:true
 endfunc
