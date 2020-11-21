@@ -372,7 +372,7 @@ func! s:on_select(...) abort
     " instead of opening
     if s:func_exists("sink", "special")
         if s:func("sink", "special", s:state, current_res)
-            call s:update_results()
+            call s:cache_data()
             startinsert!
             return
         endif
@@ -462,6 +462,7 @@ func! s:on_backspace() abort
         if parent_path != s:state.path
             let s:state.path = substitute(parent_path..'/', '[/\\]\+', '/', 'g')
             let s:state.cached_items = []
+            call s:cache_data()
         endif
         " Trigger TextChangedI and s:update_results()
         return "\<Space>\<BS>"
