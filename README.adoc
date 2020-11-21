@@ -15,7 +15,8 @@ on non-windows) tool so be sure you have one of them installed on your system.
 By default it uses vim current working directory as a project root.
 
 
-image::https://user-images.githubusercontent.com/234774/95853492-30b22400-0d5e-11eb-9a18-934752f5c22f.gif[]
+image::https://user-images.githubusercontent.com/234774/99876845-bac99400-2c0a-11eb-87cf-e881690b20c7.gif[]
+
 
 link:showcase.adoc[More animated gifs]
 
