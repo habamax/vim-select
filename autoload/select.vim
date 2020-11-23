@@ -86,6 +86,7 @@ func! s:cache_data() abort
 
     if type(s:select[s:state.type].data) == v:t_func
         let s:state.cached_items = s:select[s:state.type].data(s:state.path, s:state.init_buf)
+        call s:update_results()
     elseif !s:state.job_started && !s:state->has_key('job') && type(s:select[s:state.type].data) == v:t_dict
         if type(s:select[s:state.type].data["job"]) == v:t_string
             let cmd = s:select[s:state.type].data["job"]
