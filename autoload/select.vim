@@ -89,7 +89,7 @@ func! s:cache_data() abort
         " Can't directly call update_results as cache_data might be called from
         " Select file with <BS> to visit parent dir, which is <expr> mapping and
         " it gives "E578: Not allowed to change text here"
-        call timer_start(20, {-> s:update_results()})
+        call timer_start(0, {-> s:update_results()})
     elseif !s:state.job_started && !s:state->has_key('job') && type(s:select[s:state.type].data) == v:t_dict
         if type(s:select[s:state.type].data["job"]) == v:t_string
             let cmd = s:select[s:state.type].data["job"]
