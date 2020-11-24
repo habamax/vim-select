@@ -86,10 +86,16 @@ func! s:cache_data() abort
 
     if type(s:select[s:state.type].data) == v:t_func
         let s:state.cached_items = s:select[s:state.type].data(s:state.path, s:state.init_buf)
-        " Can't directly call update_results as cache_data might be called from
-        " Select file with <BS> to visit parent dir, which is <expr> mapping and
-        " it gives "E578: Not allowed to change text here"
-        call timer_start(0, {-> s:update_results()})
+
+        if has("patch-8.2.1978")
+            call s:update_results()
+        else
+            " Can't directly call update_results as cache_data might be called from
+            " Select file with <BS> to visit parent dir, which is <expr> mapping and
+            " it gives "E578: Not allowed to change text here"
+            call timer_start(5, {-> s:update_results()})
+        endif
+
     elseif !s:state.job_started && !s:state->has_key('job') && type(s:select[s:state.type].data) == v:t_dict
         if type(s:select[s:state.type].data["job"]) == v:t_string
             let cmd = s:select[s:state.type].data["job"]
@@ -298,7 +304,11 @@ func! s:setup_prompt_mappings() abort
     inoremap <silent><buffer> <Up> <ESC>:call <SID>on_prev()<CR>
     inoremap <silent><buffer> <PageDown> <ESC>:call <SID>on_next_page()<CR>
     inoremap <silent><buffer> <PageUp> <ESC>:call <SID>on_prev_page()<CR>
-    inoremap <expr><silent><buffer> <BS> <SID>on_backspace() .. "\<BS>"
+    if has("patch-8.2.1978")
+        inoremap <silent><buffer> <BS> <cmd>:call <SID>on_backspace()<CR><BS>
+    else
+        inoremap <expr><silent><buffer> <BS> <SID>on_backspace() .. "\<BS>"
+    endif
 
     inoremap <silent><buffer> <C-B> <Left>
     inoremap <silent><buffer> <C-F> <Right>
@@ -460,18 +470,30 @@ func! s:on_prev_page() abort
 endfunc
 
 
-func! s:on_backspace() abort
-    " handle backspace special case (E.g. Backspace in Select file when prompt
-    " is empty should visit parent directory
-    if empty(s:get_prompt_value()) && s:func_exists("sink", "special_bs")
-        if s:func("sink", "special_bs", s:state)
-            call s:cache_data()
+if has("patch-8.2.1978")
+    func! s:on_backspace() abort
+        " handle backspace special case (E.g. Backspace in Select file when prompt
+        " is empty should visit parent directory
+        if empty(s:get_prompt_value()) && s:func_exists("sink", "special_bs")
+            if s:func("sink", "special_bs", s:state)
+                call s:cache_data()
+            endif
         endif
-        " Trigger TextChangedI and s:update_results()
-        return "\<Space>\<BS>"
-    endif
-    return ''
-endfunc
+    endfunc
+else
+    func! s:on_backspace() abort
+        " handle backspace special case (E.g. Backspace in Select file when prompt
+        " is empty should visit parent directory
+        if empty(s:get_prompt_value()) && s:func_exists("sink", "special_bs")
+            if s:func("sink", "special_bs", s:state)
+                call s:cache_data()
+            endif
+            " Trigger TextChangedI and s:update_results()
+            return "\<Space>\<BS>"
+        endif
+        return ''
+    endfunc
+endif
 
 
 """
