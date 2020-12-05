@@ -34,10 +34,15 @@ let s:select.file.prompt = "File> "
 """ Select projectfile
 """
 let s:select.projectfile = {}
+let s:no_ignore_vcs = get(g:, "select_no_ignore_vcs", 1) ? " --no-ignore-vcs" : ""
 if executable('fd')
-    let s:select.projectfile.data = {"job": "fd --path-separator / --type f --hidden --follow --no-ignore-vcs --exclude .git"}
+    let s:select.projectfile.data = {
+                \ "job": "fd --path-separator / --type f --hidden --follow --exclude .git" .. s:no_ignore_vcs
+                \ }
 elseif executable('rg')
-    let s:select.projectfile.data = {"job": "rg --path-separator / --files --no-ignore-vcs --hidden --glob !.git"}
+    let s:select.projectfile.data = {
+                \ "job": "rg --path-separator / --files --hidden --glob !.git" .. s:no_ignore_vcs
+                \ }
 elseif !has("win32")
     let s:select.projectfile.data = {"job": "find -type f -not -path \"*/.git/*\""}
 else

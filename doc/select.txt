@@ -52,6 +52,18 @@ For example, if you `:Select projectfile ~` you will only be able to select out
 of 50000 files.
 
 
+*g:select_no_ignore_vcs*
+
+When selecting a project file (`:Select projectfile`), it does not
+ignore the files that are ignored by your VCS (eg: `.gitignore` when talking
+about git). You must opt out of this intended behaviour, default is 1.
+
+>
+    let g:select_no_ignore_vcs = 0
+
+NOTE: This can only be done when using `fd` or `rg` as they provide a way of
+ignoring files.
+
 
 MAPPINGS                                              *select-plugin-mappings*
 
