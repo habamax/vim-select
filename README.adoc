@@ -219,3 +219,19 @@ let b:select_info.godotscene.data = {"job": "rg --files --glob *.tscn"}
 let b:select_info.godotscene.sink = {"transform": {_, v -> fnameescape(v)}, "action": "GodotRun %s"}
 nnoremap <buffer> <leader><leader>f :Select godotscene<CR>
 ------------------------------------------------------------------------------
+
+== Provided APIs
+
+=== Respect VCS Ignore
+
+By default, when selecting a project file (`:Select projectfile`), it does not
+ignore the files that are ignored by your VCS (eg: `.gitignore` when talking
+about git). This is intended behaviour, but you can opt out it with:
+
+
+[source,vim]
+------------------------------------------------------------------------------
+let g:select_no_ignore_vcs = 0
+------------------------------------------------------------------------------
+
+NOTE: This can only be done when using `fd` or `rg` as they provide a way of ignoring files.

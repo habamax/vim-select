@@ -50,7 +50,14 @@ Maximum items to be collected and matched against, default 50000.
 Has effect only for data collected by jobs.
 For example, if you `:Select projectfile ~` you will only be able to select out
 of 50000 files.
+>
+    let g:select_no_ignore_vcs = 0
 
+By default, when selecting a project file (`:Select projectfile`), it does not
+ignore the files that are ignored by your VCS (eg: `.gitignore` when talking
+about git). You must opt out of this intended behaviour.
+NOTE: This can only be done when using `fd` or `rg` as they provide a way of
+ignoring files.
 
 
 MAPPINGS                                              *select-plugin-mappings*
