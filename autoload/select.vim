@@ -183,8 +183,8 @@ endfunc
 func! s:close() abort
     try
         call win_gotoid(s:state.init_buf.winid)
-        call win_execute(s:state.result_buf.winid, 'quit!', 1)
-        call win_execute(s:state.prompt_buf.winid, 'quit!', 1)
+        call win_execute(s:state.result_buf.winid, 'close!', 1)
+        call win_execute(s:state.prompt_buf.winid, 'close!', 1)
         if job_status(s:state.job) == "run"
             call job_stop(s:state.job)
         endif
