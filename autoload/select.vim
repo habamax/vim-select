@@ -288,6 +288,9 @@ endfunc
 
 
 func! s:setup_prompt_mappings() abort
+    " Fix CTRL-O CTRL-O breaking prompt.
+    nnoremap <silent><buffer> <C-o> <nop>
+
     inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
     inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('action2')<CR>
     inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action2')<CR>
