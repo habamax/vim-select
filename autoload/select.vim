@@ -130,7 +130,7 @@ func! s:update_results() abort
     let input = s:get_prompt_value()
 
     if input !~ '^\s*$'
-        let [items, highlights] = matchfuzzypos(s:state.cached_items, input)
+        let [items, highlights; scores] = matchfuzzypos(s:state.cached_items, input)
         let matched_items_cnt = len(items)
         let items = items[0 : s:state.max_buffer_items]
     else
