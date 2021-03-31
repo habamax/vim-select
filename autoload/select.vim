@@ -10,6 +10,11 @@ let s:select = {}
 """ Entry point
 """
 func! select#do(type, ...) abort
+    "" Close Select windows if there are any
+    if has_key(s:state, 'active') && s:state.active
+        call s:close()
+    endif
+
     "" Global select_info might be updated in the current vim session.
     "" Merge them with default
     call extend(select#def#get(), get(g:, "select_info", {}), "force")
@@ -63,6 +68,7 @@ func! select#do(type, ...) abort
         let s:state.prompt_buf = s:create_prompt_buf()
         let s:state.cached_items = []
         let s:state.job_started = v:false
+        let s:state.active = v:true
         if s:state->has_key("job")
             unlet s:state.job
         endif
@@ -198,6 +204,7 @@ func! s:close() abort
         let &showmode = s:state.showmode
         let &ruler = s:state.ruler
         let &timeoutlen = s:state.timeoutlen
+        let s:state.active = v:false
     endtry
 endfunc
 
