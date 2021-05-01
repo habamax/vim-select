@@ -298,42 +298,26 @@ func! s:setup_prompt_mappings() abort
     " Fix CTRL-O CTRL-O breaking prompt.
     nnoremap <silent><buffer> <C-o> <nop>
 
+    inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
+    inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('action2')<CR>
+    inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action2')<CR>
+    inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('action3')<CR>
+    inoremap <silent><buffer> <C-T> <ESC>:call <SID>on_select('action4')<CR>
+    inoremap <silent><buffer> <C-J> <ESC>:call <SID>on_select('action_new')<CR>
+    inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
+    inoremap <silent><buffer> <C-C> <ESC>:call <SID>on_cancel()<CR>
+    inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
+    inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
+    inoremap <silent><buffer> <C-N> <ESC>:call <SID>on_next()<CR>
+    inoremap <silent><buffer> <C-P> <ESC>:call <SID>on_prev()<CR>
+    inoremap <silent><buffer> <Down> <ESC>:call <SID>on_next()<CR>
+    inoremap <silent><buffer> <Up> <ESC>:call <SID>on_prev()<CR>
+    inoremap <silent><buffer> <PageDown> <ESC>:call <SID>on_next_page()<CR>
+    inoremap <silent><buffer> <PageUp> <ESC>:call <SID>on_prev_page()<CR>
     if has("patch-8.2.1978")
         inoremap <silent><buffer> <BS> <cmd>call <SID>on_backspace()<CR><BS>
-        inoremap <silent><buffer> <CR> <cmd>call <SID>on_select()<CR>
-        inoremap <silent><buffer> <S-CR> <cmd>call <SID>on_select('action2')<CR>
-        inoremap <silent><buffer> <C-S> <cmd>call <SID>on_select('action2')<CR>
-        inoremap <silent><buffer> <C-V> <cmd>call <SID>on_select('action3')<CR>
-        inoremap <silent><buffer> <C-T> <cmd>call <SID>on_select('action4')<CR>
-        inoremap <silent><buffer> <C-J> <cmd>call <SID>on_select('action_new')<CR>
-        inoremap <silent><buffer> <ESC> <cmd>call <SID>on_cancel()<CR>
-        inoremap <silent><buffer> <C-C> <cmd>call <SID>on_cancel()<CR>
-        inoremap <silent><buffer> <TAB> <cmd>call <SID>on_next_maybe()<CR>
-        inoremap <silent><buffer> <S-TAB> <cmd>call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <C-N> <cmd>call <SID>on_next()<CR>
-        inoremap <silent><buffer> <C-P> <cmd>call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <Down> <cmd>call <SID>on_next()<CR>
-        inoremap <silent><buffer> <Up> <cmd>call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <PageDown> <cmd>call <SID>on_next_page()<CR>
-        inoremap <silent><buffer> <PageUp> <cmd>call <SID>on_prev_page()<CR>
     else
         inoremap <expr><silent><buffer> <BS> <SID>on_backspace() .. "\<BS>"
-        inoremap <silent><buffer> <CR> <ESC>:call <SID>on_select()<CR>
-        inoremap <silent><buffer> <S-CR> <ESC>:call <SID>on_select('action2')<CR>
-        inoremap <silent><buffer> <C-S> <ESC>:call <SID>on_select('action2')<CR>
-        inoremap <silent><buffer> <C-V> <ESC>:call <SID>on_select('action3')<CR>
-        inoremap <silent><buffer> <C-T> <ESC>:call <SID>on_select('action4')<CR>
-        inoremap <silent><buffer> <C-J> <ESC>:call <SID>on_select('action_new')<CR>
-        inoremap <silent><buffer> <ESC> <ESC>:call <SID>on_cancel()<CR>
-        inoremap <silent><buffer> <C-C> <ESC>:call <SID>on_cancel()<CR>
-        inoremap <silent><buffer> <TAB> <ESC>:call <SID>on_next_maybe()<CR>
-        inoremap <silent><buffer> <S-TAB> <ESC>:call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <C-N> <ESC>:call <SID>on_next()<CR>
-        inoremap <silent><buffer> <C-P> <ESC>:call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <Down> <ESC>:call <SID>on_next()<CR>
-        inoremap <silent><buffer> <Up> <ESC>:call <SID>on_prev()<CR>
-        inoremap <silent><buffer> <PageDown> <ESC>:call <SID>on_next_page()<CR>
-        inoremap <silent><buffer> <PageUp> <ESC>:call <SID>on_prev_page()<CR>
     endif
 
     inoremap <silent><buffer> <C-B> <Left>
