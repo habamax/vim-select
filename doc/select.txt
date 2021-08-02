@@ -101,7 +101,7 @@ DEFAULT SELECT WINDOW MAPPINGS                *select-plugin-default-mappings*
 
 <C-v> to open current item in vertical split.                   *select_<C-v>*
 
-<C-t> to open current item in a tab.                            *select_<C-v>*
+<C-t> to open current item in a tab.                            *select_<C-t>*
 
 <C-j> to create a new file out of prompt value.                 *select_<C-j>*
 Only available for |:Select_file|.
