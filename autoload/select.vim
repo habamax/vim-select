@@ -285,7 +285,7 @@ func! s:prepare_buffer(type)
         endtry
     endif
     setlocal nobuflisted
-    setlocal bufhidden=hide
+    setlocal bufhidden=delete
     setlocal noswapfile
     setlocal noundofile
     setlocal nospell
