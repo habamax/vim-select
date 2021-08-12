@@ -232,7 +232,13 @@ func! s:prepare_buffer(type)
     if s:state->has_key(a:type.."_buf")
         let bufnr = s:state[a:type.."_buf"].bufnr
     else
-        let bufnr = bufnr(tempname(), 1)
+        let tempname = tempname()
+        let bufnr = bufnr(tempname, 1)
+        " temp file should not appear in :oldfiles
+        " add them to viminfo
+        if !empty(&viminfo)
+            let &viminfo .= (',r' .. fnamemodify(tempname, ":~"))
+        endif
     endif
     exe "silent noautocmd botright sbuffer "..bufnr
     if a:type == "prompt"
@@ -279,7 +285,7 @@ func! s:prepare_buffer(type)
         endtry
     endif
     setlocal nobuflisted
-    setlocal bufhidden=delete
+    setlocal bufhidden=hide
     setlocal noswapfile
     setlocal noundofile
     setlocal nospell
