@@ -123,7 +123,9 @@ endfunc
 func! s:get_project_list() abort
     try
         let fname = fnamemodify(expand("$MYVIMRC"), ":p:h").."/.selectprojects"
-        return readfile(fname)
+        let projects = readfile(fname)->sort()->uniq()
+        call filter(projects, {_, v -> isdirectory(v)})
+        return projects
     catch
         return []
     endtry
