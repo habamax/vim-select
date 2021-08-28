@@ -73,7 +73,7 @@ let s:select.project.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\
 """ Select mru
 """
 let s:select.mru = {}
-let s:select.mru.data = {-> filter(copy(v:oldfiles), {_,v -> filereadable(expand(v))})}
+let s:select.mru.data = {-> filter(copy(v:oldfiles), {_,v -> v !~ '.*`.*`.*' && filereadable(expand(v))})}
 let s:select.mru.sink = {
             \ "transform": {_, v -> fnameescape(v)},
             \ "action": "edit %s",
