@@ -73,7 +73,7 @@ let s:select.project.highlight = {"DirectoryPrefix": ['\(\s*\d\+:\)\?\zs.*[/\\]\
 """ Select mru
 """
 let s:select.mru = {}
-let s:select.mru.data = {-> filter(copy(v:oldfiles), {_,v -> v !~ '.*`.*`.*' && filereadable(expand(v))})}
+let s:select.mru.data = {-> s:get_mru_list()}
 let s:select.mru.sink = {
             \ "transform": {_, v -> fnameescape(v)},
             \ "action": "edit %s",
@@ -177,4 +177,20 @@ func! s:special_visit_parent_directory(state, path)
     let a:state.path = (a:path =~ '[/\\]$' ? a:path : a:path..'/')
     let a:state.cached_items = []
     return v:true
+endfunc
+
+
+"" MRU list.
+"" List Most Recent Used files out of v:oldfiles filtering out non-readable and
+"" built-in help text files
+func! s:get_mru_list() abort
+    let doc_txt = expand("$VIMRUNTIME") .. has("win32")?'/':'\' .. "doc"
+    func! s:filter(v) abort closure
+        let result = a:v !~ '.*`.*`.*' 
+        let result = result && stridx(a:v, doc_txt) == -1
+        let result = result && filereadable(expand(a:v))
+        return result
+    endfunc
+    let mru = filter(copy(v:oldfiles), {_,v -> s:filter(v)})
+    return mru
 endfunc
