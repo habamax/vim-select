@@ -184,7 +184,7 @@ endfunc
 "" List Most Recent Used files out of v:oldfiles filtering out non-readable and
 "" built-in help text files
 func! s:get_mru_list() abort
-    let doc_txt = expand("$VIMRUNTIME") .. has("win32")?'/':'\' .. "doc"
+    let doc_txt = expand("$VIMRUNTIME") .. (has("win32")?'\':'/') .. "doc"
     func! s:filter(v) abort closure
         let result = a:v !~ '.*`.*`.*' 
         let result = result && stridx(a:v, doc_txt) == -1
