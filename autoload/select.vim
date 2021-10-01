@@ -295,6 +295,7 @@ func! s:prepare_buffer(type)
     setlocal nolist
     setlocal tw=0
     setlocal winfixheight
+    setlocal colorcolumn&
     abc <buffer>
     return bufnr
 endfunc
