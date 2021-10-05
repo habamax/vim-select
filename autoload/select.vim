@@ -229,7 +229,7 @@ endfunc
 
 
 func! s:prepare_buffer(type)
-    if s:state->has_key(a:type.."_buf")
+    if s:state->has_key(a:type.."_buf") && bufexists(s:state[a:type.."_buf"].bufnr)
         let bufnr = s:state[a:type.."_buf"].bufnr
     else
         let tempname = tempname()
