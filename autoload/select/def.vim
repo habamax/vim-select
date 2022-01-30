@@ -11,10 +11,7 @@ endfunc
 """ Select file
 """
 let s:select.file = {}
-let s:select.file.data = {path ->
-            \  map(readdirex(path, {d -> d.type =~ '\%(dir\|linkd\)$'}), {_, v -> v.name..'/'})
-            \+ map(readdirex(path, {d -> d.type =~ '\%(file\|link\)$'}), {_, v -> v.name})
-            \ }
+let s:select.file.data = {path -> s:ls(path)}
 let s:select.file.sink = {
             \ "transform": {p, v -> fnameescape(p..v)},
             \ "empty": {v -> v},
@@ -28,6 +25,8 @@ let s:select.file.sink = {
             \ }
 let s:select.file.highlight = {"Directory": ['^.*/$', 'Directory']}
 let s:select.file.prompt = "File> "
+
+
 
 
 """
@@ -105,6 +104,14 @@ let s:select.buffer.highlight = {
 """
 """ Helpers
 """
+
+"" List of directories and files
+func! s:ls(path) abort
+    let path = isdirectory(a:path) ? a:path : getcwd()
+    return map(readdirex(path, {d -> d.type =~ '\%(dir\|linkd\)$'}), {_, v -> v.name..'/'})
+            \+ map(readdirex(path, {d -> d.type =~ '\%(file\|link\)$'}), {_, v -> v.name})
+endfunc
+
 
 "" Buffer list is sorted by lastused time + 2 most recently used buffers
 "" are exchanged/switched:
