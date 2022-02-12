@@ -259,7 +259,7 @@ func! s:prepare_buffer(type)
         setlocal buftype=nofile
         set filetype=selectresults
         setlocal statusline=%#Statusline#%{select#statusline_type()}%=%{select#statusline_progress()}
-        setlocal cursorline
+        setlocal cursorline cursorlineopt=both
         setlocal noruler
         setlocal laststatus=0
         setlocal noshowmode
