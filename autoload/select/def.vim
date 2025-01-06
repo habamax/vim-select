@@ -43,7 +43,7 @@ elseif executable('rg')
                 \ "job": "rg --path-separator / --files --hidden --glob !.git" .. s:no_ignore_vcs
                 \ }
 elseif !has("win32")
-    let s:select.projectfile.data = {"job": "find -type f -not -path \"*/.git/*\""}
+    let s:select.projectfile.data = {"job": "find -L . -name .git -prune -o -type f -print"}
 else
     let s:select.projectfile.data = ""
 endif
